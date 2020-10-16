@@ -2,7 +2,6 @@
     "dev": {
         "aws_region": "us-west-2",
         "django_settings": "devproject.settings",
-        "profile_name": "dev",
         "project_name": "community-app-w",
         "runtime": "python3.6",
         "s3_bucket": "zappa-9dhv4lmqd"
