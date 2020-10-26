@@ -11,8 +11,6 @@ phases:
       - core_cache=$(python3 -c 'import os; print(os.environ["tmp_core_cache"].replace("\"", "\\\"").replace("\"", "\\\""), end="")')
       - export core_cache
 
-      - npm i -g npx
-      - npm i -g yarn
       - export build_artifacts_bucket="$(aws ssm get-parameter --name /$STAGE/s3/build_artifacts/id --output text --query Parameter.Value)"
 
       - virtualenv -p python3.6 venv
