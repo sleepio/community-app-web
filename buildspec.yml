@@ -26,7 +26,7 @@ phases:
       - cd frontend
       - npm install
       - cd ..
-      - rsync -rv frontend/ webapp/src/community_app/static/
+      - rsync -q -rv frontend/ webapp/src/community_app/static/
 
       - cd webapp/src
       - python3 zappa_deploy.py $STAGE
