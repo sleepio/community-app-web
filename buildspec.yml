@@ -28,7 +28,7 @@ phases:
       - cd ..
       - rsync -rv frontend/ webapp/src/community_app/static/
 
-      - cd ../webapp/src
+      - cd webapp/src
       - python3 zappa_deploy.py $STAGE
       - zappa update $STAGE
       - zappa manage $STAGE "collectstatic --no-input"
