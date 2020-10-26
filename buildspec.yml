@@ -1,15 +1,10 @@
 version: 0.2
 phases:
   install:
-    commands:
-      # Node installation
-      - curl -sL https://deb.nodesource.com/setup_10.x | bash -
-      - apt-get install -y nodejs libxmlsec1-dev pkg-config
-      # Yarn installation
-      - curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
-      - echo "deb http://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
-      - sudo apt-get -y update
-      - apt-get install -y yarn
+    runtime-versions:
+      nodejs: 10
+      python: 3.7
+
   build:
     commands:
       - export tmp_core_cache="$(aws ssm get-parameter --name /$STAGE/global/core_cache --with-decryption --output text --query Parameter.Value)"
