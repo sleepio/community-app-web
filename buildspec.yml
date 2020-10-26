@@ -25,6 +25,7 @@ phases:
 
       - cd frontend
       - npm install
+      - cd ..
       - rsync -rv frontend/ webapp/src/community_app/static/
 
       - cd ../webapp/src
