@@ -1,0 +1,5 @@
+use_remote_dynamic_settings: true
+
+DEBUG: true
+
+aws_storage_bucket_name: avi-community-app-web-testing

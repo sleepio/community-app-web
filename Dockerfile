@@ -1,34 +1,25 @@
-# This dockerfile is only meant for local development of Misago
-# If you are looking for a proper docker setup for running Misago in production,
-# please use misago-docker instead
-FROM python:3.7
+FROM circleci/python:3.6.8
 
-ENV PYTHONUNBUFFERED 1
-ENV IN_MISAGO_DOCKER 1
+COPY webapp/requirements*.txt /opt/bh/webapp/
 
-# Install dependencies in one single command/layer
-RUN apt-get update && apt-get install -y \
-    vim \
-    libffi-dev \
-    libssl-dev \
-    sqlite3 \
-    libjpeg-dev \
-    libopenjp2-7-dev \
-    locales \
-    cron \
-    postgresql-client \
-    gettext
+WORKDIR /opt/bh
 
-# Add requirements and install them. We do this unnecessasy rebuilding.
-ADD requirements.txt /
-ADD requirements-plugins.txt /
+ARG GIT_TOKEN
+ARG PIP_REQUIREMENTS
 
-RUN pip install --upgrade pip && \
-    pip install -r requirements.txt && \
-    pip install -r requirements-plugins.txt
+# Killian: I don't know why we need these? Commenting because they take a long time.
+# RUN sudo apt-get update 
+# RUN sudo apt-get install libxmlsec1-dev
 
-WORKDIR /srv/misago
+# install Python modules needed by the Python app
+RUN sudo pip install --upgrade pip
+RUN pip install --no-cache-dir --no-warn-script-location -r /opt/bh/webapp/$PIP_REQUIREMENTS --user
 
-EXPOSE 8000
+COPY . /opt/bh/
 
-CMD python manage.py runserver 0.0.0.0:8000
+# tell the port number the container should expose
+EXPOSE 8100
+
+# run the application
+ENTRYPOINT ["python3"]
+CMD /opt/bh/webapp/src/manage.py runserver 0.0.0.0:8100

@@ -1,0 +1,40 @@
+version: 0.2
+phases:
+  install:
+    commands:
+      # Node installation
+      - curl -sL https://deb.nodesource.com/setup_10.x | bash -
+      - apt-get install -y nodejs libxmlsec1-dev pkg-config
+      # Yarn installation
+      - curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+      - echo "deb http://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+      - sudo apt-get -y update
+      - apt-get install -y yarn
+  build:
+    commands:
+      - export tmp_core_cache="$(aws ssm get-parameter --name /$STAGE/global/core_cache --with-decryption --output text --query Parameter.Value)"
+      - core_cache=$(python3 -c 'import os; print(os.environ["tmp_core_cache"].replace("\"", "\\\"").replace("\"", "\\\""), end="")')
+      - export core_cache
+
+      - npm i -g npx
+      - npm i -g yarn
+      - export build_artifacts_bucket="$(aws ssm get-parameter --name /$STAGE/s3/build_artifacts/id --output text --query Parameter.Value)"
+
+      - virtualenv -p python3.6 venv
+      - . venv/bin/activate
+      - pip install -r webapp/requirements.txt
+
+      - sed -i "s/'docutils\*',//g" 'venv/lib/python3.6/site-packages/zappa/core.py'
+      - sed -i '/profile_name/d' webapp/src/zappa_settings.json
+      - sed -i "s/${STAGE}_VPC_SECURITY_GROUP_ID/${VPC_SECURITY_GROUP_ID}/" webapp/src/zappa_settings.json
+      - sed -i "s/${STAGE}_core_cache/${core_cache}/" webapp/src/zappa_settings.json
+      - sed -i "s/${STAGE}_VPC_SUBNET_IDS/$(echo $VPC_SUBNET_IDS | sed 's/\,/\"\,\"/g')/" webapp/src/zappa_settings.json
+
+      - cd frontend
+      - npm install
+      - rsync -rv frontend/ webapp/src/community_app/static/
+
+      - cd ../webapp/src
+      - python3 zappa_deploy.py $STAGE
+      - zappa update $STAGE
+      - zappa manage $STAGE "collectstatic --no-input"

@@ -1,0 +1,42 @@
+version: "3"
+
+services:
+  community_app_web:
+    image: community_app_web
+    build:
+      context: .
+      args:
+        GIT_TOKEN: ${GIT_TOKEN}
+        PIP_REQUIREMENTS: requirements.txt
+    ports:
+      - "8100:8100"
+    entrypoint: python3
+    command: /opt/bh/webapp/src/manage.py runserver 0.0.0.0:8100
+    volumes:
+      - ./:/opt/bh
+    environment:
+      stage: local
+      project_config_dir: /opt/bh/webapp/src/community_app/settings/
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_SESSION_TOKEN: ${AWS_SESSION_TOKEN}
+      AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION}
+      GIT_TOKEN: ${GIT_TOKEN}
+      SERVICE_CLUSTER_NAME: community_app_web
+    networks:
+      default:
+        aliases:
+          - community_app_web
+
+  community_app_frontend:
+    image: community_app_frontend
+    build: docker/client
+    volumes:
+      - ./docker/client/task:/var/task
+    ports:
+      - "3100:3100"
+
+networks:
+  default:
+    external:
+      name: platform_default
