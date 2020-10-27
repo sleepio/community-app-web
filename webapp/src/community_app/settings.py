@@ -26,7 +26,7 @@ logger.setLevel(0)
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-os.environ['project_config_dir'] = os.path.abspath(os.path.join(BASE_DIR, 'devproject', 'settings'))
+os.environ['project_config_dir'] = os.path.abspath(os.path.join(BASE_DIR, 'community_app', 'settings'))
 
 from bh_settings import get_settings
 
