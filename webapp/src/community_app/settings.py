@@ -12,8 +12,15 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
+import logging
 
 from misago import load_plugin_list_if_exists
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+
+
+logger = logging.getLogger('SETTINGS')
+logger.setLevel(0)
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -432,3 +439,9 @@ EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 DEBUG_TOOLBAR_CONFIG = {
     "SHOW_TOOLBAR_CALLBACK": "misago.conf.debugtoolbar.enable_debug_toolbar"
 }
+
+sentry_dsn = get_settings('sentry_dsn')
+if sentry_dsn:
+    sentry_sdk.init(dsn=sentry_dsn, integrations=[DjangoIntegration()])
+else:
+    logger.warning('Sentry DSN not found.')
