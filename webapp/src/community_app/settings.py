@@ -246,7 +246,7 @@ MIDDLEWARE = [
     "misago.threads.middleware.UnreadThreadsCountMiddleware",
 ]
 
-ROOT_URLCONF = "devproject.urls"
+ROOT_URLCONF = "community_app.urls"
 
 SOCIAL_AUTH_STRATEGY = "misago.socialauth.strategy.MisagoStrategy"
 
@@ -322,7 +322,7 @@ TEMPLATES = [
     }
 ]
 
-WSGI_APPLICATION = "devproject.wsgi.application"
+WSGI_APPLICATION = "community_app.wsgi.application"
 
 
 # Django Debug Toolbar
