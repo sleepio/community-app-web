@@ -22,6 +22,7 @@
     "log_level": "DEBUG",
     "exclude": [
       "venv"
-    ]
+    ],
+    "include": []
   }
 }
