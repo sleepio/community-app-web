@@ -3,7 +3,6 @@ phases:
   install:
     runtime-versions:
       nodejs: 10
-      python: 3.7
 
   build:
     commands:
@@ -13,11 +12,11 @@ phases:
 
       - export build_artifacts_bucket="$(aws ssm get-parameter --name /$STAGE/s3/build_artifacts/id --output text --query Parameter.Value)"
 
-      - python3 -m venv venv
+      - virtualenv -p python3.6 venv
       - . venv/bin/activate
       - pip install -r webapp/requirements.txt
 
-      - sed -i "s/'docutils\*',//g" 'venv/lib/python3.7/site-packages/zappa/core.py'
+      - sed -i "s/'docutils\*',//g" 'venv/lib/python3.6/site-packages/zappa/core.py'
       - sed -i '/profile_name/d' webapp/src/zappa_settings.json
       - sed -i "s/${STAGE}_VPC_SECURITY_GROUP_ID/${VPC_SECURITY_GROUP_ID}/" webapp/src/zappa_settings.json
       - sed -i "s/${STAGE}_core_cache/${core_cache}/" webapp/src/zappa_settings.json
