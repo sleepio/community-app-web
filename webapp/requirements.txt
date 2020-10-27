@@ -70,7 +70,7 @@ wcwidth==0.1.9            # via pytest
 webencodings==0.5.1       # via bleach, html5lib
 webservices[django]==0.7  # via django-simple-sso
 zipp==3.1.0               # via importlib-metadata
-zappa==0.52.0
+zappa==0.48.0
 
 git+https://${GIT_TOKEN}:@github.com/sleepio/core-framework-python.git@v1.8.3
 git+https://${GIT_TOKEN}:@github.com/sleepio/bh-settings-python.git@v1.1.1
