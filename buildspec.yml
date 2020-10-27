@@ -14,7 +14,9 @@ phases:
 
       - python3.6 -m venv venv
       - . venv/bin/activate
-      - pip install -r webapp/requirements.txt
+      - pip install pip==19.3.1 --no-cache-dir
+      - pip install setuptools==36.0.1 --no-cache-dir
+      - pip install -r webapp/requirements.txt --no-cache-dir
 
       - sed -i "s/'docutils\*',//g" 'venv/lib/python3.6/site-packages/zappa/core.py'
       - sed -i '/profile_name/d' webapp/src/zappa_settings.json
