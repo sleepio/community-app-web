@@ -24,7 +24,9 @@ phases:
       - sed -i "s/${STAGE}_VPC_SUBNET_IDS/$(echo $VPC_SUBNET_IDS | sed 's/\,/\"\,\"/g')/" webapp/src/zappa_settings.json
 
       - cd frontend
-      - npm install
+      - npm install -production
+      - curl -sf https://gobinaries.com/tj/node-prune | sh
+      - node-prune
       - cd ..
       - rsync -q -rv frontend/ webapp/src/community_app/static/
 
