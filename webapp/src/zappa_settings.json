@@ -9,6 +9,7 @@
       "stage": "dev",
       "core_cache": "dev_core_cache"
     },
+    "slim_handler": true,
     "timeout_seconds": 30,
     "vpc_config": {
       "SubnetIds": [
