@@ -2,8 +2,11 @@
 import os
 import sys
 
+from bh.core_utils.trace import wrap_with_trace
 
-if __name__ == "__main__":
+
+@wrap_with_trace
+def django_execute_from_command_line(args):
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "community_app.settings")
     try:
         from django.core.management import execute_from_command_line
@@ -20,4 +23,9 @@ if __name__ == "__main__":
                 "forget to activate a virtual environment?"
             )
         raise
-    execute_from_command_line(sys.argv)
+
+    execute_from_command_line(args)
+
+
+if __name__ == "__main__":
+    django_execute_from_command_line(sys.argv)
