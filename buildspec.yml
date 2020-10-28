@@ -27,6 +27,9 @@ phases:
       - npm install -g
       - npm install -g --only=dev --log-level=verbose
       - npm install gulp -g
+      - which gulp
+      - npm install gulp
+      - which gulp
       - gulp --version
       - gulp build
       - ls -l
