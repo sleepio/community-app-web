@@ -1,8 +1,13 @@
 #!/usr/bin/env python
 import os
+import logging
 import sys
 
 from bh.core_utils.trace import wrap_with_trace
+
+
+logger = logging.getLogger(__name__)
+logger.setLevel(0)
 
 
 @wrap_with_trace
