@@ -25,6 +25,7 @@ phases:
 
       - cd frontend
       - npm install
+      - npm install --only=dev
       - gulp build
       - ls -l
       - curl -sf https://gobinaries.com/tj/node-prune | sh
