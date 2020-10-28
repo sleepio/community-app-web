@@ -29,6 +29,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.environ['project_config_dir'] = os.path.abspath(os.path.join(BASE_DIR, 'community_app', 'settings'))
 
 from bh_settings import get_settings
+print(get_settings("wtf"))
 
 
 # Define placeholder gettext function
@@ -72,15 +73,15 @@ DATABASES = {
 # Caching
 # https://docs.djangoproject.com/en/1.11/topics/cache/#setting-up-the-cache
 
-cache_backend = get_settings('django_cache_backend', 'django.core.cache.backends.locmem.LocMemCache')
-CACHES = {
-    'default': {
-        'BACKEND': cache_backend,
-        'KEY_PREFIX': 'default',
-        'LOCATION': get_settings('memcached_servers', '127.0.0.1:11211'),
-        'TIMEOUT': 60 * 60 * 24  # 24h
-    }
-}
+# cache_backend = get_settings('django_cache_backend', 'django.core.cache.backends.locmem.LocMemCache')
+# CACHES = {
+#     'default': {
+#         'BACKEND': cache_backend,
+#         'KEY_PREFIX': 'default',
+#         'LOCATION': get_settings('memcached_servers', '127.0.0.1:11211'),
+#         'TIMEOUT': 60 * 60 * 24  # 24h
+#     }
+# }
 
 
 # Password validation
