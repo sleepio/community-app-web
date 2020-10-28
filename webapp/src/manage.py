@@ -1,17 +1,9 @@
 #!/usr/bin/env python
 import os
-import logging
 import sys
 
-from bh.core_utils.trace import wrap_with_trace
 
-
-logger = logging.getLogger(__name__)
-logger.setLevel(0)
-
-
-@wrap_with_trace
-def django_execute_from_command_line(args):
+if __name__ == "__main__":
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "community_app.settings")
     try:
         from django.core.management import execute_from_command_line
@@ -28,9 +20,5 @@ def django_execute_from_command_line(args):
                 "forget to activate a virtual environment?"
             )
         raise
-
-    execute_from_command_line(args)
-
-
-if __name__ == "__main__":
-    django_execute_from_command_line(sys.argv)
+    print(sys.argv)
+    execute_from_command_line(sys.argv)
