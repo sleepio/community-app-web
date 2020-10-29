@@ -26,7 +26,7 @@ phases:
       - cd frontend
       - npm install
       - npm install -g --only=dev --log-level=verbose
-      - npm install gulp
+      - npm install -g gulp
       - gulp build
       - npm uninstall
 
