@@ -118,7 +118,6 @@ USE_TZ = True
 
 DEFAULT_FILE_STORAGE = get_settings('django_file_storage')
 STATICFILES_STORAGE = get_settings('django_staticfile_storage')
-COLLECTFAST_STRATEGY = "collectfast.strategies.boto3.Boto3Strategy"
 AWS_STORAGE_BUCKET_NAME = get_settings('aws_storage_bucket_name')
 AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
 AWS_QUERYSTRING_AUTH = False
@@ -188,7 +187,6 @@ INSTALLED_APPS = INSTALLED_PLUGINS + [
     "django.contrib.humanize",
     "django.contrib.sessions",
     "django.contrib.messages",
-    'collectfast',
     "django.contrib.staticfiles",
     # 3rd party apps used by Misago
     "ariadne.contrib.django",
@@ -248,6 +246,7 @@ MIDDLEWARE = [
     "misago.users.middleware.OnlineTrackerMiddleware",
     "misago.admin.middleware.AdminAuthMiddleware",
     "misago.threads.middleware.UnreadThreadsCountMiddleware",
+    "opencensus.ext.django.middleware.OpencensusMiddleware",
 ]
 
 ROOT_URLCONF = "community_app.urls"
