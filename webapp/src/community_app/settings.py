@@ -19,7 +19,7 @@ import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
 
-logger = logging.getLogger('SETTINGS')
+logger = logging.getLogger('DJANGO SETTINGS')
 logger.setLevel(0)
 
 
@@ -41,10 +41,11 @@ _ = lambda s: s
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+# TODO Add SECRET_KEY to SSM
 SECRET_KEY = "1znyfpwp*_#!r0#l248lht*6)_0b+504n*2-8cxf(2u)fhi0f^"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = get_settings("DEBUG", False)
 
 
 # A list of strings representing the host/domain names that this Django site can serve.
@@ -56,15 +57,16 @@ ALLOWED_HOSTS = ["*"]
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
+db_config = get_settings("db")
 DATABASES = {
     "default": {
         # Misago requires PostgreSQL to run
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "community",
-        "USER": "community",
-        "PASSWORD": "community",
-        "HOST": "avi-community-app-web-testing.cvuqliaxaqau.us-west-2.rds.amazonaws.com",
-        "PORT": 5432,
+        "ENGINE": db_config.get("engine"),
+        "NAME": db_config.get("name"),
+        "USER": db_config.get("user"),
+        "PASSWORD": db_config.get("password"),
+        "HOST": db_config.get("host"),
+        "PORT": db_config.get("port"),
     }
 }
 

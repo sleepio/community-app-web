@@ -24,11 +24,11 @@ phases:
       - sed -i "s/${STAGE}_VPC_SUBNET_IDS/$(echo $VPC_SUBNET_IDS | sed 's/\,/\"\,\"/g')/" webapp/src/zappa_settings.json
 
       - cd frontend
-      - npm install -g
+      - npm install
       - npm install -g --only=dev --log-level=verbose
-      - npm install gulp -g
       - npm install gulp
       - gulp build
+      - npm uninstall
 
       - curl -sf https://gobinaries.com/tj/node-prune | sh
       - node-prune
