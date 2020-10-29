@@ -28,10 +28,8 @@ phases:
       - npm install -g --only=dev --log-level=verbose
       - npm install -g gulp
       - gulp build
-      - npm uninstall
+      - rm -r node_modules
 
-      - curl -sf https://gobinaries.com/tj/node-prune | sh
-      - node-prune
       - cd ..
       - ls -l
       - rsync -q -rv misago/static/misago/ webapp/src/community_app/static/
