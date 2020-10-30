@@ -2,7 +2,7 @@
   "dev": {
     "aws_region": "us-west-2",
     "django_settings": "community_app.settings",
-    "project_name": "avi-community-app-web",
+    "project_name": "community-app-web",
     "runtime": "python3.6",
     "s3_bucket": "bhdevacct-dev-build-artifacts-us-west-2",
     "aws_environment_variables": {
@@ -10,6 +10,7 @@
       "core_cache": "dev_core_cache"
     },
     "slim_handler": true,
+    "keep_warm": true,
     "timeout_seconds": 30,
     "vpc_config": {
       "SubnetIds": [
@@ -21,7 +22,9 @@
     },
     "log_level": "DEBUG",
     "exclude": [
-      "venv"
+      "venv",
+      ".git",
+      "docker"
     ],
     "include": []
   }

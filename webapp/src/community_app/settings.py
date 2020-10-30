@@ -41,8 +41,7 @@ _ = lambda s: s
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# TODO Add SECRET_KEY to SSM
-SECRET_KEY = "1znyfpwp*_#!r0#l248lht*6)_0b+504n*2-8cxf(2u)fhi0f^"
+SECRET_KEY = get_settings("django_secret_key", "1znyfpwp*_#!r0#l248lht*6)_0b+504n*2-8cxf(2u)fhi0f^")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = get_settings("DEBUG", False)
@@ -74,6 +73,7 @@ DATABASES = {
 # Caching
 # https://docs.djangoproject.com/en/1.11/topics/cache/#setting-up-the-cache
 
+# NOTE (Avi) We may need this, but so far it has not been necessary
 # cache_backend = get_settings('django_cache_backend', 'django.core.cache.backends.locmem.LocMemCache')
 # CACHES = {
 #     'default': {
@@ -246,7 +246,6 @@ MIDDLEWARE = [
     "misago.users.middleware.OnlineTrackerMiddleware",
     "misago.admin.middleware.AdminAuthMiddleware",
     "misago.threads.middleware.UnreadThreadsCountMiddleware",
-    "opencensus.ext.django.middleware.OpencensusMiddleware",
 ]
 
 ROOT_URLCONF = "community_app.urls"
@@ -361,6 +360,7 @@ REST_FRAMEWORK = {
 }
 
 
+# TODO (Avi) If this isn't necessary, let's remove it entirely.
 # Celery - Distributed Task Queue
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html
 
