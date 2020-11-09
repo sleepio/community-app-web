@@ -19,14 +19,14 @@ import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
 
-logger = logging.getLogger('DJANGO SETTINGS')
+logger = logging.getLogger("DJANGO SETTINGS")
 logger.setLevel(0)
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-os.environ['project_config_dir'] = os.path.abspath(os.path.join(BASE_DIR, 'community_app', 'settings'))
+os.environ["project_config_dir"] = os.path.abspath(os.path.join(BASE_DIR, "community_app", "settings"))
 
 from bh_settings import get_settings
 
@@ -89,14 +89,8 @@ DATABASES = {
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
-        "OPTIONS": {"user_attributes": ["username", "email"]},
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-        "OPTIONS": {"min_length": 7},
-    },
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator", "OPTIONS": {"user_attributes": ["username", "email"]},},
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator", "OPTIONS": {"min_length": 7},},
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
@@ -116,33 +110,40 @@ USE_L10N = True
 USE_TZ = True
 
 
-DEFAULT_FILE_STORAGE = get_settings('django_file_storage')
-STATICFILES_STORAGE = get_settings('django_staticfile_storage')
-AWS_STORAGE_BUCKET_NAME = get_settings('aws_storage_bucket_name')
-AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+DEFAULT_FILE_STORAGE = get_settings("django_file_storage")
+STATICFILES_STORAGE = get_settings("django_staticfile_storage")
+
+# AWS S3 Config
+AWS_STORAGE_BUCKET_NAME = get_settings("aws_storage_bucket_name")
+AWS_S3_CUSTOM_DOMAIN = "%s.s3.amazonaws.com" % AWS_STORAGE_BUCKET_NAME
 AWS_QUERYSTRING_AUTH = False
 AWS_IS_GZIPPED = True
-AWS_LOCATION = ''
-AWS_BUCKET_ACL = 'public-read'
+AWS_LOCATION = ""
+AWS_DEFAULT_ACL = None
+AWS_BUCKET_ACL = "public-read"
 AWS_S3_OBJECT_PARAMETERS = {
-    'CacheControl': 'max-age=86400',
-    'GrantRead': 'uri=http://acs.amazonaws.com/groups/global/AllUsers',
+    "CacheControl": "max-age=86400",
+    "GrantRead": "uri=http://acs.amazonaws.com/groups/global/AllUsers",
 }
 
 STATICFILES_DIRS = [
-    os.path.abspath(os.path.join(BASE_DIR, 'community_app', 'static')),
+    os.path.abspath(os.path.join(BASE_DIR, "community_app", "static")),
 ]
 
-AWS_DEFAULT_ACL = None
-STATICFILES_LOCATION = 'static'  # used in url
-STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, STATICFILES_LOCATION)
+STATICFILES_LOCATION = "static"  # used in url
+
+if STATICFILES_STORAGE == "storages.backends.s3boto3.S3Boto3Storage":
+    STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{STATICFILES_LOCATION}/"
+else:
+    STATIC_URL = f'localhost:{get_settings("LOCAL_PORT")}/{STATICFILES_LOCATION}/'
+    # STATIC_ROOT = f''
 
 
 # User uploads (Avatars, Attachments, files uploaded in other Django apps, ect.)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 MEDIAFILES_LOCATION = "media"
-MEDIA_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, MEDIAFILES_LOCATION)
+MEDIA_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, MEDIAFILES_LOCATION)
 
 
 # Email configuration
@@ -350,9 +351,7 @@ DEBUG_TOOLBAR_PANELS = [
 # http://www.django-rest-framework.org/api-guide/settings/
 
 REST_FRAMEWORK = {
-    "DEFAULT_PERMISSION_CLASSES": [
-        "misago.core.rest_permissions.IsAuthenticatedOrReadOnly"
-    ],
+    "DEFAULT_PERMISSION_CLASSES": ["misago.core.rest_permissions.IsAuthenticatedOrReadOnly"],
     "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"],
     "EXCEPTION_HANDLER": "misago.core.exceptionhandler.handle_api_exception",
     "UNAUTHENTICATED_USER": "misago.users.models.AnonymousUser",
@@ -425,10 +424,7 @@ MISAGO_PROFILE_FIELDS = [
             "misago.users.profilefields.default.WebsiteField",
         ],
     },
-    {
-        "name": _("IP address"),
-        "fields": ["misago.users.profilefields.default.JoinIpField"],
-    },
+    {"name": _("IP address"), "fields": ["misago.users.profilefields.default.JoinIpField"],},
 ]
 
 
@@ -439,12 +435,10 @@ EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 # Display debug toolbar if IN_MISAGO_DOCKER enviroment var is set to "1"
 
-DEBUG_TOOLBAR_CONFIG = {
-    "SHOW_TOOLBAR_CALLBACK": "misago.conf.debugtoolbar.enable_debug_toolbar"
-}
+DEBUG_TOOLBAR_CONFIG = {"SHOW_TOOLBAR_CALLBACK": "misago.conf.debugtoolbar.enable_debug_toolbar"}
 
-sentry_dsn = get_settings('sentry_dsn')
+sentry_dsn = get_settings("sentry_dsn")
 if sentry_dsn:
     sentry_sdk.init(dsn=sentry_dsn, integrations=[DjangoIntegration()])
 else:
-    logger.warning('Sentry DSN not found.')
+    logger.warning("Sentry DSN not found.")

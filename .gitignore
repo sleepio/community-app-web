@@ -114,7 +114,5 @@ data/*
 .pytest_cache/
 cov_html
 
-# Frontend: created by clone-client-app.sh
-.tmp-bighealth-frontend
 # Frontend: built on deploy
-webapp/src/community_app/static/client-app
+webapp/src/community_app/static/
