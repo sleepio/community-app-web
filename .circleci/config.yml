@@ -1,0 +1,73 @@
+# Python CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-python/ for more details
+#
+version: 2
+jobs:
+  build_and_test:
+    docker:
+      - image: lambci/lambda:build-python3.6
+      - image: circleci/postgres:9.6.5-alpine-ram
+      - image: circleci/node:12.18
+
+    environment:
+      LOCAL_BIN: /root/.local/bin
+      stage: circleci
+      project_config_dir: webapp/src/community_app/settings/
+      AWS_ACCESS_KEY_ID: ~
+      AWS_SECRET_ACCESS_KEY: ~
+      AWS_DEFAULT_REGION: us-east-1
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "requirements.txt" }}-{{ checksum "requirements-test.txt" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+
+      - run:
+          name: install CI dependencies
+          command: pip install --user -r webapp/requirements-test.txt
+
+      - run:
+          name: Set python path
+          command: |
+            echo 'export PYTHONPATH=$PYTHONPATH:webapp/' >> $BASH_ENV
+
+      - run:
+          name: run test
+          command: |
+            $LOCAL_BIN/pytest --cov
+
+      - run:
+          name: generate coverage reports
+          command: |
+            $LOCAL_BIN/coverage html -d artifacts
+            $LOCAL_BIN/coverage-badge -o artifacts/coverage.svg
+
+      - run:
+          name: try building frontend
+          command: |
+            cd frontend
+            npm install
+            npm install gulp
+            npx gulp build
+
+      - store_artifacts:
+          path: artifacts
+
+      - save_cache:
+          paths:
+            - "/root/.local"
+          key: v1-dependencies-{{ checksum "requirements.txt" }}-{{ checksum "requirements-test.txt" }}
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build_and_test:
+          context: Github Repo Access
+      - test_js:
+          context: Github Repo Access
