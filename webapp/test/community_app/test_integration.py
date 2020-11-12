@@ -10,17 +10,17 @@ from bh.services.factory import Factory
 
 import bh_settings
 
-@mock_settings({"hello": "goodbye", "global_instance_warming_default": 10})
-def test_get_setting(_setting_mock):
-    # Verify CF defaults are pulled in
-    assert bh_settings.get_settings("default_warmed_instances") == 5
+# @mock_settings({"hello": "goodbye", "global_instance_warming_default": 10})
+# def test_get_setting(_setting_mock):
+#     # Verify CF defaults are pulled in
+#     assert bh_settings.get_settings("default_warmed_instances") == 5
 
-    # Verify mocked new settings are pulled in
-    assert bh_settings.get_settings("hello") == "goodbye"
+#     # Verify mocked new settings are pulled in
+#     assert bh_settings.get_settings("hello") == "goodbye"
 
-    # Verify mocked overridden settings are pulled in
-    assert bh_settings.get_settings("global_instance_warming_default") == 10
+#     # Verify mocked overridden settings are pulled in
+#     assert bh_settings.get_settings("global_instance_warming_default") == 10
 
-@mock_service_call(ServiceCallMock("Blah", "1", "test", return_value="hello"))
-def test_service_call(self):
-    assert Factory.create("Blah", "1").test() == "hello"
+# @mock_service_call(ServiceCallMock("Blah", "1", "test", return_value="hello"))
+# def test_service_call(self):
+#     assert Factory.create("Blah", "1").test() == "hello"
