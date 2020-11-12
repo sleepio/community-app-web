@@ -69,5 +69,3 @@ workflows:
     jobs:
       - build_and_test:
           context: Github Repo Access
-      - test_js:
-          context: Github Repo Access
