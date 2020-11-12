@@ -29,7 +29,7 @@ jobs:
       - run:
           name: install CI dependencies
           command: |
-            pip uninstall --user PIL
+            pip uninstall PIL
             pip install --user -r webapp/requirements-test.txt
 
       - run:
