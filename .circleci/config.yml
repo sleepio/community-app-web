@@ -28,7 +28,9 @@ jobs:
 
       - run:
           name: install CI dependencies
-          command: pip install --user -r webapp/requirements-test.txt
+          command: |
+            pip uninstall --user PIL
+            pip install --user -r webapp/requirements-test.txt
 
       - run:
           name: Set python path
