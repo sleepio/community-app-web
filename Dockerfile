@@ -28,14 +28,10 @@ USER root
 RUN npm install
 RUN npm install gulp
 
-# # Build FE app
-# RUN npx gulp build
-# WORKDIR /opt/bh
-
 # tell the port number the container should expose
 EXPOSE 8200
 
-# run the application
+# finish up
 USER circleci
-ENTRYPOINT ["python3"]
-CMD /opt/bh/webapp/src/manage.py runserver 0.0.0.0:8200
+WORKDIR /opt/bh
+ENV PYTHONPATH=$PYTHONPATH:/opt/bh/webapp/src/

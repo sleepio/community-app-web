@@ -14,7 +14,7 @@
 
 ### Javascript
 1. Run the local server by following the instructions above.
-1. Changes made to the frontend will NOT be detected automatically.
+1. Changes made to the frontend will NOT be detected automatically, yet. You can run `docker-compose exec community_app_web npx gulp watch` to trigger the watcher. How well this works is unknown but check out the `gulpfile.js` in the `frontend` directory to see details.
 
 ## Test
 
@@ -22,4 +22,4 @@
 1. Run `docker-compose up --build community_app_web-test` to run the pytest suite locally.
 
 ### Javascript
-Testing setup not present yet for frontend JS code.
+Testing setup not present yet for frontend JS code. Misago claims to provide a [suite of Mocha.js tests](https://github.com/rafalp/Misago#frontend), but the gulp task to run it is not present in their gulpfile.

@@ -135,7 +135,7 @@ if STATICFILES_STORAGE == "storages.backends.s3boto3.S3Boto3Storage":
     #     os.path.abspath(os.path.join(BASE_DIR, "misago", "static")),
     # ]
 else:
-    STATIC_URL = f'/{STATICFILES_LOCATION}/'
+    STATIC_URL = f"/{STATICFILES_LOCATION}/"
     STATIC_ROOT = os.path.abspath(os.path.join(BASE_DIR, "misago", "static"))
 
 
