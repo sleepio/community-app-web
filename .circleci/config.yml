@@ -6,7 +6,7 @@ version: 2
 jobs:
   build_and_test:
     docker:
-      - image: lambci/lambda:build-python3.6
+      - image: circleci/python:3.6.8
       # - image: circleci/node:12.18
 
     environment:
@@ -29,7 +29,7 @@ jobs:
       - run:
           name: install CI dependencies
           command: |
-            pip uninstall PIL
+            pip freeze
             pip install --user -r webapp/requirements-test.txt
 
       - run:
