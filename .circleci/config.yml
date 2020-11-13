@@ -10,7 +10,7 @@ jobs:
       # - image: circleci/node:12.18
 
     environment:
-      LOCAL_BIN: /home/circleci/.local/bin
+      LOCAL_BIN: /root/.local/bin
       stage: circleci
       project_config_dir: webapp/src/community_app/settings/
       AWS_ACCESS_KEY_ID: ~
