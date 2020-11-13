@@ -35,7 +35,7 @@ jobs:
       - run:
           name: Set python path
           command: |
-            echo 'export PYTHONPATH=$PYTHONPATH:webapp/' >> $BASH_ENV
+            echo 'export PYTHONPATH=$PYTHONPATH:webapp/src/' >> $BASH_ENV
 
       - run:
           name: run test
