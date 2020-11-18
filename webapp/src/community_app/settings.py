@@ -41,10 +41,13 @@ from bh_settings import get_settings
 # without need for Django's i18n features be initialized first.
 _ = lambda s: s
 
+print("L44")
 
 # Enable Datadog (do this before setting DEBUG)
 dd_config.service = get_settings("project_name", get_settings("SERVICE_CLUSTER_NAME", None))
 patch_all()
+
+print("L50")
 
 # Initialize Sentry
 init_sentry([DjangoIntegration()])
@@ -65,11 +68,16 @@ Factory.load_by_package_names(get_settings("base_service_packages", []) + get_se
 
 ALLOWED_HOSTS = ["*"]
 
+print("L71")
+
 
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
 db_config = get_settings("db")
+
+print(db_config)
+
 DATABASES = {
     "default": {
         # Misago requires PostgreSQL to run
@@ -81,6 +89,8 @@ DATABASES = {
         "PORT": int(db_config.get("port")),
     }
 }
+
+print("L90")
 
 
 # Caching
