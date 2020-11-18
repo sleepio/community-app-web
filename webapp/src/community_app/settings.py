@@ -23,17 +23,12 @@ from misago import load_plugin_list_if_exists
 
 logger = logging.getLogger("DJANGO SETTINGS")
 logger.setLevel(0)
-logger.debug("SET LEVEL")
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-logger.debug(BASE_DIR)
-
 os.environ["project_config_dir"] = os.path.abspath(os.path.join(BASE_DIR, "community_app", "settings"))
 
-logger.debug(os.environ["project_config_dir"])
 
 from bh_settings import get_settings
 from bh.core_utils.sentry import init_sentry
@@ -45,13 +40,11 @@ from bh.services.factory import Factory
 # without need for Django's i18n features be initialized first.
 _ = lambda s: s
 
-logger.debug("L44")
 
 # Enable Datadog (do this before setting DEBUG)
 dd_config.service = get_settings("project_name", get_settings("SERVICE_CLUSTER_NAME", None))
 patch_all()
 
-logger.debug("L50")
 
 # Initialize Sentry
 init_sentry([DjangoIntegration()])
@@ -72,16 +65,11 @@ Factory.load_by_package_names(get_settings("base_service_packages", []) + get_se
 
 ALLOWED_HOSTS = ["*"]
 
-logger.debug("L71")
-
 
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
 db_config = get_settings("db")
-
-logger.debug(db_config)
-
 DATABASES = {
     "default": {
         # Misago requires PostgreSQL to run
@@ -93,8 +81,6 @@ DATABASES = {
         "PORT": int(db_config.get("port")),
     }
 }
-
-logger.debug("L90")
 
 
 # Caching

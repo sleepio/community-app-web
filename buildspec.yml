@@ -31,8 +31,8 @@ phases:
 
       - cd ../webapp/src
       - python3 zappa_deploy.py $STAGE
+      - zappa manage $STAGE migrate || true
       - zappa update $STAGE
-      - zappa manage $STAGE migrate
 
       # Collectstatic times out for some reason but seems to work
       # Run twice to be safe, and escape to mark build as succeeded
