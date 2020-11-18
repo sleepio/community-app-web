@@ -26,6 +26,7 @@ from misago import load_plugin_list_if_exists
 
 logger = logging.getLogger("DJANGO SETTINGS")
 logger.setLevel(0)
+logger.debug("SET LEVEL")
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
