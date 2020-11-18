@@ -31,7 +31,11 @@ logger.setLevel(0)
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+logger.debug(BASE_DIR)
+
 os.environ["project_config_dir"] = os.path.abspath(os.path.join(BASE_DIR, "community_app", "settings"))
+
+logger.debug(os.environ["project_config_dir"])
 
 from bh_settings import get_settings
 
@@ -41,13 +45,13 @@ from bh_settings import get_settings
 # without need for Django's i18n features be initialized first.
 _ = lambda s: s
 
-print("L44")
+logger.debug("L44")
 
 # Enable Datadog (do this before setting DEBUG)
 dd_config.service = get_settings("project_name", get_settings("SERVICE_CLUSTER_NAME", None))
 patch_all()
 
-print("L50")
+logger.debug("L50")
 
 # Initialize Sentry
 init_sentry([DjangoIntegration()])
@@ -68,7 +72,7 @@ Factory.load_by_package_names(get_settings("base_service_packages", []) + get_se
 
 ALLOWED_HOSTS = ["*"]
 
-print("L71")
+logger.debug("L71")
 
 
 # Database
@@ -76,7 +80,7 @@ print("L71")
 
 db_config = get_settings("db")
 
-print(db_config)
+logger.debug(db_config)
 
 DATABASES = {
     "default": {
@@ -90,7 +94,7 @@ DATABASES = {
     }
 }
 
-print("L90")
+logger.debug("L90")
 
 
 # Caching
