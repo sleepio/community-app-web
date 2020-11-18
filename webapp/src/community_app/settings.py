@@ -18,9 +18,6 @@ from ddtrace import config as dd_config
 from ddtrace import patch_all
 from sentry_sdk.integrations.django import DjangoIntegration
 
-from bh.core_utils.sentry import init_sentry
-from bh.services.factory import Factory
-
 from misago import load_plugin_list_if_exists
 
 
@@ -39,6 +36,8 @@ os.environ["project_config_dir"] = os.path.abspath(os.path.join(BASE_DIR, "commu
 logger.debug(os.environ["project_config_dir"])
 
 from bh_settings import get_settings
+from bh.core_utils.sentry import init_sentry
+from bh.services.factory import Factory
 
 
 # Define placeholder gettext function
