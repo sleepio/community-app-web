@@ -23,10 +23,6 @@ phases:
       - pip install -r webapp/requirements.txt --no-cache-dir
 
       - sed -i "s/'docutils\*',//g" 'venv/lib/python3.7/site-packages/zappa/core.py'
-      - sed -i '/profile_name/d' webapp/src/zappa_settings.json
-      - sed -i "s/${STAGE}_VPC_SECURITY_GROUP_ID/${VPC_SECURITY_GROUP_ID}/" webapp/src/zappa_settings.json
-      - sed -i "s/${STAGE}_core_cache/${core_cache}/" webapp/src/zappa_settings.json
-      - sed -i "s/${STAGE}_VPC_SUBNET_IDS/$(echo $VPC_SUBNET_IDS | sed 's/\,/\"\,\"/g')/" webapp/src/zappa_settings.json
 
       # FE Build
       - cd frontend
