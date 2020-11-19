@@ -12,11 +12,7 @@ phases:
 
   build:
     commands:
-      - export tmp_core_cache="$(aws ssm get-parameter --name /$STAGE/global/core_cache --with-decryption --output text --query Parameter.Value)"
-      - core_cache=$(python3 -c 'import os; print(os.environ["tmp_core_cache"].replace("\"", "\\\"").replace("\"", "\\\""), end="")')
-      - export core_cache
-
-      - export build_artifacts_bucket="$(aws ssm get-parameter --name /$STAGE/s3/build_artifacts/id --output text --query Parameter.Value)"
+      - export CORE_CACHE="$(aws ssm get-parameter --name /$STAGE/global/core_cache --with-decryption --output text --query Parameter.Value)"
 
       - python3 -m venv venv
       - . venv/bin/activate
