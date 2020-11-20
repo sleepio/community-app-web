@@ -1,7 +1,7 @@
 {
   "{{ env['STAGE'] }}": {
     "aws_region": "{{ env['AWS_REGION'] }}",
-    "django_settings": "platform_app.settings",
+    "django_settings": "community_app.settings",
     "manage_roles": {{ env['MANAGE_ROLES'] }},
     "role_name": "{{ env['IAM_ROLE_NAME'] }}",
     "project_name": "{{ env['IMAGE_REPO_NAME'] }}",
