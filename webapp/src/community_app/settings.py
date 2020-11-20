@@ -259,7 +259,6 @@ MIDDLEWARE = [
     "misago.users.middleware.OnlineTrackerMiddleware",
     "misago.admin.middleware.AdminAuthMiddleware",
     "misago.threads.middleware.UnreadThreadsCountMiddleware",
-    "pyinstrument.middleware.ProfilerMiddleware",
 ]
 
 ROOT_URLCONF = "community_app.urls"
