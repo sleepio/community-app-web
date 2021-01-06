@@ -43,6 +43,7 @@ urlpatterns = [
     url(r"^django-admin/", admin.site.urls),
     # django-simple-sso doesn't have namespaces, we can't use namespace here
     url(r"^sso/", include("misago.sso.urls")),
+    url("", include("social_django.urls", namespace="social")),
 ]
 
 
