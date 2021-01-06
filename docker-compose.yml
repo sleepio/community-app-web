@@ -56,6 +56,8 @@ services:
     build: docker/postgres
     volumes:
       - postgres:/data/postgres
+    ports:
+      - "8201:5432"
     environment:
       POSTGRES_DB: community
       POSTGRES_USER: community
