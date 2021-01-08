@@ -10,22 +10,21 @@ class CommunityApp(BaseService):
     It is only intended to be used as an interface between the community web app and external BH services.
     """
 
-    def validate_tokens(self, access_token: str, refresh_token: str) -> SQLEntity:
+    def validate_tokens(self, access_token: str = None, refresh_token: str = None) -> SQLEntity:
+        """Validate tokens provided. If access_token is None, attempt to refresh tokens.
+
+        Args:
+            access_token (str, optional): access token of the session. Defaults to None.
+            refresh_token (str, optional): refresh token of the session. Defaults to None.
+
+        Returns:
+            SQLEntity: the UserAccountAuthentication entity
+        """
         authentication_service = Factory.create("UserAccountAuthentication", "1")
-        authentication_entity = authentication_service.find_with_tokens(access_token=access_token, refresh_token=refresh_token)
 
-        if not authentication_entity:
-            raise Exception("Tokens not found. Redirect to Sleepio")
+        if not access_token:
+            # Access token is expired, use refresh token to get new tokens
+            tokens = authentication_service.refresh_access_token(refresh_token=refresh_token)
+            access_token, refresh_token = tokens["access_token"], tokens["refresh_token"]
 
-        if not authentication_service.is_refresh_token_valid(
-            refresh_token=refresh_token,
-            user_id=authentication_entity.get("user_id"),
-            device_fingerprint=authentication_entity.get("device_fingerprint"),
-            product_id=authentication_entity.get("product_id"),
-        ):
-            # This is not a great user experience.
-            # We will likely need to be able to refresh tokens and set those cookies within the community app without going back to Sleepio.
-            # TODO
-            raise Exception("Refresh token expired. Redirect to Sleepio to do refreshing.")
-
-        return authentication_entity
+        return authentication_service.find_with_tokens(access_token=access_token, refresh_token=refresh_token)
