@@ -11,3 +11,5 @@ db:
   password: community
   port: 5432
   username: community
+
+sleepio_app_url: localhost:8100/

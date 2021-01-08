@@ -263,6 +263,8 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "community_app.urls"
 
+SOCIAL_AUTH_STRATEGY = "social_django.strategy.DjangoStrategy"
+
 SOCIAL_AUTH_PIPELINE = (
     # Sleepio token tasks to get user information
     "community_app.auth.pipeline.extract_tokens",
@@ -277,10 +279,12 @@ SOCIAL_AUTH_PIPELINE = (
     # Those steps make sure banned users may not join your site or use banned name or email.
     "misago.socialauth.pipeline.validate_ip_not_banned",
     "misago.socialauth.pipeline.validate_user_not_banned",
+
     # Reads user data received from social site and tries to create valid and available username
     # Required if you want automatic account creation to work. Otherwise optional.
     "community_app.auth.pipeline.get_username",
-    # Uncomment next line to enable automatic account creation if data from social site is valid
+
+    # Enables automatic account creation if data from social site is valid
     # and get_username found valid name for new user account:
     'misago.socialauth.pipeline.create_user',
 
@@ -290,6 +294,7 @@ SOCIAL_AUTH_PIPELINE = (
     "misago.socialauth.pipeline.require_activation",
 )
 
+SOCIAL_AUTH_DISCONNECT_PIPELINE = ()  # Disable disconnection
 
 SOCIAL_AUTH_POSTGRES_JSONFIELD = True
 

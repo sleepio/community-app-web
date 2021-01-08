@@ -1,17 +1,28 @@
+import logging
+
+from django.shortcuts import redirect
+
 from bh.services.factory import Factory
 from misago.socialauth.pipeline import perpare_username
 
+from .exceptions import MissingOptionalParameters, UserNotAuthenticated, ExpiredRefreshToken, InvalidTokens
+
+
+logger = logging.getLogger("CommunityPipeline")
+
 
 def extract_tokens(request, *args, **kwargs) -> dict:
-    try:
-        return dict(access_token=request.COOKIES["access_token"], refresh_token=request.COOKIES["refresh_token"])
-    except KeyError:
-        raise Exception("tokens not found, redirect to sleepio")  # TODO Redirect to Sleepio
+    return dict(access_token=request.COOKIES.get("access_token"), refresh_token=request.COOKIES.get("refresh_token"))
 
 
 def validate_tokens(access_token: str, refresh_token: str, *args, **kwargs) -> dict:
     community_app_service = Factory.create("CommunityApp", "1")
-    authentication_entity = community_app_service.validate_tokens(access_token=access_token, refresh_token=refresh_token)
+    try:
+        authentication_entity = community_app_service.validate_tokens(access_token=access_token, refresh_token=refresh_token)
+    except (MissingOptionalParameters, UserNotAuthenticated, ExpiredRefreshToken, InvalidTokens):
+        logger.exception("Error in validating tokens. Redirecting to Sleepio...")
+        return redirect("/login/sleepio")  # TODO Add query string to redirect back to Community
+
     return dict(
         access_token=authentication_entity.get("access_token"),
         refresh_token=authentication_entity.get("refresh_token"),

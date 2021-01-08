@@ -2,6 +2,8 @@ import logging
 
 from social_core.backends.base import BaseAuth
 
+from bh_settings import get_settings
+
 
 logger = logging.getLogger("SleepioAuth")
 
@@ -23,7 +25,7 @@ class SleepioAuth(BaseAuth):
         return user_account.get("id")
 
     def auth_url(self):
-        return "https://5a5480038ae2.ngrok.io/sleepio"
+        return get_settings("sleepio_app_url")
 
     def auth_complete(self, *args, **kwargs):
         kwargs.update({"response": self.data, "backend": self})
