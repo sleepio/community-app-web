@@ -26,3 +26,15 @@ Make sure to create pull requests against this repository, and not the base fork
 
 ### Javascript
 Testing setup not present yet for frontend JS code. Misago claims to provide a [suite of Mocha.js tests](https://github.com/rafalp/Misago#frontend), but the gulp task to run it is not present in their gulpfile.
+
+## Admin Superuser
+
+### Setup
+In the root of the repo run `docker-compose run --rm community_app_web webapp/src/manage.py createsuperuser`. You should be prompted for a username, email, and password. The default values are:
+```
+username = "Admin"
+password = "password"
+email = "admin@example.com"
+```
+
+Navigate to the following url: http://localhost:8200/admincp/.
