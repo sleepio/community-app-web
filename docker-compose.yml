@@ -7,9 +7,10 @@ services:
       context: .
       args:
         GIT_TOKEN: ${GIT_TOKEN}
-        PIP_REQUIREMENTS: requirements.txt
+        PIP_REQUIREMENTS: requirements-local.txt
     ports:
       - "8200:8200"
+      - "8211:8211"
     entrypoint: python3
     command: /opt/bh/webapp/src/manage.py runserver 0.0.0.0:8200
     volumes:
