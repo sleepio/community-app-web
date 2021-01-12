@@ -255,6 +255,7 @@ MIDDLEWARE = [
     "misago.socialauth.middleware.socialauth_providers_middleware",
     "misago.users.middleware.UserMiddleware",
     "misago.acl.middleware.user_acl_middleware",
+    "community_app.auth.middleware.platgen_session_middleware",
     "misago.core.middleware.ExceptionHandlerMiddleware",
     "misago.users.middleware.OnlineTrackerMiddleware",
     "misago.admin.middleware.AdminAuthMiddleware",
