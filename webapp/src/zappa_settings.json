@@ -1,0 +1,40 @@
+{
+    "dev": {
+        "aws_region": "us-west-2",
+        "django_settings": "community_app.settings",
+        "manage_roles": false,
+        "role_name": "bhdevacct-dev-community-app-web-zappa-execution-us-west-2",
+        "project_name": "community-app-web",
+        "s3_bucket": "***",
+        "runtime": "python3.6",
+        "exclude": [
+            "venv",
+            ".git",
+            "docker"
+        ],
+        "include": [],
+        "slim_handler": true,
+        "log_level": "DEBUG",
+        "keep_warm": true,
+        "timeout_seconds": 30,
+        "vpc_config": {
+            "SubnetIds": [
+                "subnet-0eea53e6a61349ddc",
+                "subnet-0d257b670db89b355",
+                "subnet-0ab511c607db035ca"
+            ],
+            "SecurityGroupIds": [
+                "***"
+            ]
+        },
+        "environment_variables": {
+            "stage": "dev"
+        },
+        "aws_environment_variables": {
+            "stage": "dev",
+            "core_cache": "{\"cluster_mode\":false,\"db\":0,\"hostname\":\"master.bhdevacct-dev-redis-core.tvizmx.usw2.cache.amazonaws.com\",\"password\":\"jCs7ebEG0qNnQbIGNyuATbujMBPAg5nOK0x9TOUt\",\"port\":\"6379\",\"ssl\":true,\"type\":\"redis\"}"
+        },
+        "certificate_arn": "arn:aws:acm:us-east-1:173432075717:certificate/91718626-7497-4b1c-9e0b-0602236492b5",
+        "domain": "community.sleepiodev.com"
+    }
+}
