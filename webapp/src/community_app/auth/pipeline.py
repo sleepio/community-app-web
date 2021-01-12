@@ -19,6 +19,8 @@ def validate_tokens(access_token: str, refresh_token: str, *args, **kwargs) -> d
     community_app_service = Factory.create("CommunityApp", "1")
     try:
         authentication_entity = community_app_service.validate_tokens(access_token=access_token, refresh_token=refresh_token)
+        if not authentication_entity:
+            raise InvalidTokens
     except (MissingOptionalParameters, UserNotAuthenticated, ExpiredRefreshToken, InvalidTokens):
         logger.debug("Error in validating tokens. Redirecting to Sleepio...")
         return redirect("/login/sleepio")  # TODO Add query string to redirect back to Community
