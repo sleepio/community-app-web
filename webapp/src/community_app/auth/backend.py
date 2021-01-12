@@ -12,14 +12,14 @@ class SleepioAuth(BaseAuth):
     name = "sleepio"
     supports_inactive_user = False
 
-    def get_user_details(self, details):
+    def get_user_details(self, user_account):
         return {
-            "username": details.get("uuid")[:12],  # TODO temporary
-            "email": details.get("email_address"),
-            "fullname": f"{details.get('first_name')} {details.get('last_name')}",
-            "first_name": details.get("first_name"),
-            "last_name": details.get("last_name"),
-            "uuid": details.get("uuid")
+            "username": user_account.get("uuid")[:12],  # TODO temporary
+            "email": user_account.get("email_address"),
+            "fullname": f"{user_account.get('first_name')} {user_account.get('last_name')}",
+            "first_name": user_account.get("first_name"),
+            "last_name": user_account.get("last_name"),
+            "uuid": user_account.get("uuid")
         }
 
     def get_user_id(self, details, response):
