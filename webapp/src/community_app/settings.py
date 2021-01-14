@@ -267,9 +267,9 @@ ROOT_URLCONF = "community_app.urls"
 SOCIAL_AUTH_STRATEGY = "social_django.strategy.DjangoStrategy"
 
 SOCIAL_AUTH_PIPELINE = (
-    # Sleepio token tasks to get user information
-    "community_app.auth.pipeline.extract_tokens",
-    "community_app.auth.pipeline.validate_tokens",
+    # Sleepio task to get user information
+    # Middleware task community_app.auth.middleware.platgen_session_middleware is responsible for
+    # authentication, and obtaining the platform user id
     "community_app.auth.pipeline.fetch_user_account",
 
     # Steps required by social pipeline to work - don't delete those!

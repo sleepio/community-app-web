@@ -22,9 +22,9 @@ class CommunityApp(BaseService):
         """
         authentication_service = Factory.create("UserAccountAuthentication", "1")
 
-        if not access_token:
+        # if not access_token:
             # Access token is expired, use refresh token to get new tokens
-            tokens = authentication_service.refresh_access_token(refresh_token=refresh_token)
-            access_token, refresh_token = tokens["access_token"], tokens["refresh_token"]
+        #    tokens = authentication_service.refresh_access_token(refresh_token=refresh_token)
+        #    access_token, refresh_token = tokens["access_token"], tokens["refresh_token"]
 
         return authentication_service.find_with_tokens(access_token=access_token, refresh_token=refresh_token)

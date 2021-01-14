@@ -3,38 +3,20 @@ import logging
 from django.shortcuts import redirect
 
 from bh.services.factory import Factory
+from bh_settings import get_settings
+
 from misago.socialauth.pipeline import perpare_username
-
-from .exceptions import MissingOptionalParameters, UserNotAuthenticated, ExpiredRefreshToken, InvalidTokens
-
 
 logger = logging.getLogger("CommunityPipeline")
 
 
-def extract_tokens(request, *args, **kwargs) -> dict:
-    return dict(access_token=request.COOKIES.get("access_token"), refresh_token=request.COOKIES.get("refresh_token"))
-
-
-def validate_tokens(access_token: str, refresh_token: str, *args, **kwargs) -> dict:
-    community_app_service = Factory.create("CommunityApp", "1")
-    try:
-        authentication_entity = community_app_service.validate_tokens(access_token=access_token, refresh_token=refresh_token)
-        if not authentication_entity:
-            raise InvalidTokens
-    except (MissingOptionalParameters, UserNotAuthenticated, ExpiredRefreshToken, InvalidTokens):
-        logger.debug("Error in validating tokens. Redirecting to Sleepio...")
-        return redirect("/login/sleepio")  # TODO Add query string to redirect back to Community
-
-    return dict(
-        access_token=authentication_entity.get("access_token"),
-        refresh_token=authentication_entity.get("refresh_token"),
-        user_id=authentication_entity.get("user_id"),
-    )
-
-
-def fetch_user_account(user_id: int, *args, **kwargs) -> dict:
-    user_account_entity = Factory.create("UserAccount", "1").read(entity_id=user_id)
-    return dict(user_account=user_account_entity)
+def fetch_user_account(request, *args, **kwargs) -> dict:
+    if hasattr(request, "_platform_user_id"):
+        user_account_entity = Factory.create("UserAccount", "1").read(entity_id=request._platform_user_id)
+        return dict(user_account=user_account_entity)
+    else:
+        logger.debug("Middleware did not supply _platform_user_id. Redirecting to Sleepio...")
+        return redirect(get_settings("sleepio_app_url"))  # TODO Add query string to redirect back to Community
 
 
 def get_username(details, *args, **kwargs) -> dict:
