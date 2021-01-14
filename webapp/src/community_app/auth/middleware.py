@@ -26,13 +26,14 @@ def platgen_session_middleware(get_response):
     REFRESH_TOKEN = "refresh_token"
 
     def extract_tokens(request, *args, **kwargs) -> dict:
-        return dict(access_token=request.COOKIES.get("access_token"), refresh_token=request.COOKIES.get("refresh_token"))
+        return dict(access_token=request.COOKIES.get(ACCESS_TOKEN), refresh_token=request.COOKIES.get(REFRESH_TOKEN))
 
     def middleware(request, *args, **kwargs):
         # Code to be executed for each request before
         # the view (and later middleware) are called.
 
         cookies_updated = False
+        authentication_entity = None
 
         # Here we validate existence of an authentication entity but ONLY for non-admin users.
         # We must support admin users logging in with email, and not using Sleepio auth cookies.
@@ -54,28 +55,12 @@ def platgen_session_middleware(get_response):
             access_token = tokens.get(ACCESS_TOKEN)
             refresh_token = tokens.get(REFRESH_TOKEN)
             authentication_service = Factory.create("UserAccountAuthentication", "1")
-            authentication_entity = None
             if access_token or refresh_token:
                 # TODO question, this works with either token. If we don't have a refresh token, this means we'll be redirected
                 # when it times out. Problem?
                 authentication_entity = authentication_service.find_with_tokens(access_token=access_token, refresh_token=refresh_token)
             if access_token is None or not authentication_entity:
                 try:
-                    # TODO POC on calling via ClientGateway to leverage its cookie creation
-                    # TBD: How to parse response?
-                    # client_gateway_service = Factory.create("ClientGateway", "1")
-                    # result = None
-                    # with RequestContext() as rc:
-                    #     rc.attach(HEADERS, {"Cookie": f"refresh_token={refresh_token}"})
-                    #     result = client_gateway_service.proxy_service_call(
-                    #         service_name="UserAccountAuthentication",
-                    #         service_version="1",
-                    #         service_method="refresh_access_token",
-                    #     )
-                    #     logger.info(result)
-                    #     logger.info(rc)
-                    # logger.info(result)
-
                     tokens = authentication_service.refresh_access_token(refresh_token=refresh_token)
                     access_token, refresh_token = tokens["access_token"], tokens["refresh_token"]
                     authentication_entity = authentication_service.find_with_tokens(access_token=access_token, refresh_token=refresh_token)
