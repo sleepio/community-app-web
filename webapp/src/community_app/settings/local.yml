@@ -2,6 +2,8 @@ use_remote_dynamic_settings: false
 
 DEBUG: true
 
+secure_cookies: false  # Enable if using a proxy like ngrok
+
 django_file_storage: django.core.files.storage.FileSystemStorage
 django_staticfile_storage: django.contrib.staticfiles.storage.StaticFilesStorage
 
