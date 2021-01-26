@@ -1,22 +1,16 @@
 import logging
-
 from datetime import datetime, timedelta
-from django.conf import settings
-from django.contrib.auth import logout
-
-# from django.shortcuts import redirect
-from misago.users.models import AnonymousUser
 from typing import Optional
 
 from bh.core_utils.bh_exception import BHException
 from bh.services.factory import Factory
 from bh_settings import get_settings
-
+from django.conf import settings
+from django.contrib.auth import logout
+# from django.shortcuts import redirect
+from misago.users.models import AnonymousUser
 
 logger = logging.getLogger("CommunityMiddleware")
-
-# import debugpy
-# debugpy.listen(("0.0.0.0", 8211))
 
 
 class UserNotAuthenticated(BHException):

@@ -37,17 +37,13 @@ def get_response():
     )
 )
 def test_middleware_valid_tokens(mocks, get_request, get_response):
-
-    #import debugpy
-    #debugpy.listen(("0.0.0.0", 8212))
-    #debugpy.wait_for_client()
-
     get_request.user = AnonymousUser()
     get_request.COOKIES["access_token"] = "foo"
     get_request.COOKIES["refresh_tokne"] = "bar"
 
     middleware = PlatformTokenMiddleware(get_response)
     response = middleware(get_request)
+
     assert get_request._platform_user_id == "a_user"
     assert not response.method_calls
 
@@ -74,6 +70,7 @@ def test_middleware_refresh_tokens(mocks, get_request, get_response):
 
     middleware = PlatformTokenMiddleware(get_response)
     response = middleware(get_request)
+
     assert get_request._platform_user_id == "a_user"
 
     calls = [
@@ -123,8 +120,31 @@ def test_middleware_refresh_exception_logout(mocks, logout, get_request, get_res
 
     get_request.user = UserMock()
     get_request.COOKIES[settings.SESSION_COOKIE_NAME] = "session"
+
     middleware = PlatformTokenMiddleware(get_response)
-    middleware(get_request)
+    response = middleware(get_request)
+
     assert get_request.user == AnonymousUser()
     assert not hasattr(get_request, "_platform_user_id")
-    logout.assert_called_once
+    logout.assert_called_once()
+    response.set_cookie.assert_not_called()
+
+
+def test_middleware_admin_user(get_request, get_response):
+    class AdminUserMock:
+        name = "admin mock"
+        is_superuser = True
+
+        def __eq__(self, other):
+            return isinstance(other, self.__class__)
+
+    get_request.user = AdminUserMock()
+    get_request.COOKIES["access_token"] = "foo"
+    get_request.COOKIES["refresh_token"] = "bar"
+
+    middleware = PlatformTokenMiddleware(get_response)
+    response = middleware(get_request)
+
+    assert get_request.user == AdminUserMock()
+    assert not hasattr(get_request, "_platform_user_id")
+    response.set_cookie.assert_not_called()
