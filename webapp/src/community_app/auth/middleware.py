@@ -7,6 +7,7 @@ from bh.services.factory import Factory
 from bh_settings import get_settings
 from django.conf import settings
 from django.contrib.auth import logout
+
 # from django.shortcuts import redirect
 from misago.users.models import AnonymousUser
 
@@ -64,6 +65,83 @@ class PlatformTokenMiddleware:
         except KeyError:
             return None
 
+    def _validate_tokens(self, access_token, refresh_token):
+        """
+        Validates acess and/or refresh tokens from Platform
+
+        First, we establish whether we have an authentication entity.
+        If we don't, or we don't have an access_token we attempt to refresh our tokens.
+        (This allows us to use an existing access_token without a refresh_token)
+
+        If we can't refresh, or we can't obtain an authentication_entity, we raise UserNotAuthenticated
+
+        Args:
+            access_token: Platform generated access token
+            refresh_token: Platform generated refresh token
+
+        Returns:
+            A dict with keys acess_token, refresh_token, authentication_entity, cookies_updated
+        """
+        cookies_updated = False
+        authentication_service = None
+
+        authentication_service = Factory.create("UserAccountAuthentication", "1")
+
+        if access_token or refresh_token:
+            # TODO question, this works with either token. If we don't have a refresh token, this means we'll be redirected
+            # when it times out. Problem?
+            authentication_entity = authentication_service.find_with_tokens(access_token=access_token, refresh_token=refresh_token)
+
+        if not (access_token and authentication_entity):
+            tokens = authentication_service.refresh_access_token(refresh_token=refresh_token)
+            access_token, refresh_token = tokens.get(self.ACCESS_TOKEN), tokens.get(self.REFRESH_TOKEN)
+            authentication_entity = authentication_service.find_with_tokens(access_token=access_token, refresh_token=refresh_token)
+            if not authentication_entity:
+                raise UserNotAuthenticated
+            cookies_updated = True
+
+        return {
+            self.ACCESS_TOKEN: access_token,
+            self.REFRESH_TOKEN: refresh_token,
+            "authentication_entity": authentication_entity,
+            "cookies_updated": cookies_updated,
+        }
+
+    def _update_tokens(self, request, response, access_token, refresh_token):
+        """
+        Updates the response with the latest access_token and refresh_token cookies.
+        This follows similar behavior in client-gateway-service-cluster
+
+        Args:
+            request: the request
+            response: the response
+            access_token: the platform acess_token
+            refresh_token: the platform refresh_token
+        """
+        clear_cookie_dt = datetime(year=1970, month=1, day=1)
+        domain = self._construct_cookie_domain_from_request_headers(request.headers)
+        response.set_cookie(
+            self.ACCESS_TOKEN,
+            access_token,
+            expires=(datetime.utcnow() + timedelta(seconds=get_settings("access_token_cookie_expiration_seconds")))
+            if access_token
+            else clear_cookie_dt,
+            domain=domain,
+            secure=get_settings("secure_cookies", True),
+            httponly=True,
+        )
+
+        response.set_cookie(
+            self.REFRESH_TOKEN,
+            refresh_token,
+            expires=(datetime.utcnow() + timedelta(days=get_settings("refresh_token_cookie_expiration_days")))
+            if refresh_token
+            else clear_cookie_dt,
+            secure=get_settings("secure_cookies", True),
+            domain=domain,
+            httponly=True,
+        )
+
     def __call__(self, request):
         """
         Here we validate existence of an authentication entity but ONLY for non-admin users.
@@ -97,31 +175,24 @@ class PlatformTokenMiddleware:
             tokens = self._extract_tokens(request)
             access_token, refresh_token = tokens.get(self.ACCESS_TOKEN), tokens.get(self.REFRESH_TOKEN)
 
-            authentication_service = Factory.create("UserAccountAuthentication", "1")
-
-            if access_token or refresh_token:
-                # TODO question, this works with either token. If we don't have a refresh token, this means we'll be redirected
-                # when it times out. Problem?
-                authentication_entity = authentication_service.find_with_tokens(access_token=access_token, refresh_token=refresh_token)
-
-            if access_token is None or not authentication_entity:
-                try:
-                    tokens = authentication_service.refresh_access_token(refresh_token=refresh_token)
-                    access_token, refresh_token = tokens.get(self.ACCESS_TOKEN), tokens.get(self.REFRESH_TOKEN)
-                    authentication_entity = authentication_service.find_with_tokens(access_token=access_token, refresh_token=refresh_token)
-                    if not authentication_entity:
-                        raise UserNotAuthenticated
-                    cookies_updated = True
-                except BHException as e:
-                    logger.info(e)
-                    if settings.SESSION_COOKIE_NAME in request.COOKIES:
-                        logout(request)
-                        request.user = AnonymousUser()
-                    # TODO enable this when we have sleepio redirect URLS,
-                    #   and second level domain cookies working.
-                    #   Until then, this will always fire upon landing on the page
-                    #   because we won't have the cookies generated
-                    # return redirect(get_settings("sleepio_app_url"))
+            try:
+                validated_tokens = self._validate_tokens(access_token, refresh_token)
+                access_token, refresh_token, authentication_entity, cookies_updated = (
+                    validated_tokens.get(self.ACCESS_TOKEN),
+                    validated_tokens.get(self.REFRESH_TOKEN),
+                    validated_tokens.get("authentication_entity"),
+                    validated_tokens.get("cookies_updated"),
+                )
+            except BHException as e:
+                logger.info(e)
+                if settings.SESSION_COOKIE_NAME in request.COOKIES:
+                    logout(request)
+                    request.user = AnonymousUser()
+                # TODO enable this when we have sleepio redirect URLS,
+                #   and second level domain cookies working.
+                #   Until then, this will always fire upon landing on the page
+                #   because we won't have the cookies generated
+                # return redirect(get_settings("sleepio_app_url"))
 
         if authentication_entity:
             request._platform_user_id = authentication_entity.get("user_id")
@@ -131,28 +202,6 @@ class PlatformTokenMiddleware:
         # Code to be executed for each request/response after
         # the view is called.
         if cookies_updated:
-            clear_cookie_dt = datetime(year=1970, month=1, day=1)
-            domain = self._construct_cookie_domain_from_request_headers(request.headers)
-            response.set_cookie(
-                self.ACCESS_TOKEN,
-                access_token,
-                expires=(datetime.utcnow() + timedelta(seconds=get_settings("access_token_cookie_expiration_seconds")))
-                if access_token
-                else clear_cookie_dt,
-                domain=domain,
-                secure=get_settings("secure_cookies", True),
-                httponly=True,
-            )
-
-            response.set_cookie(
-                self.REFRESH_TOKEN,
-                refresh_token,
-                expires=(datetime.utcnow() + timedelta(days=get_settings("refresh_token_cookie_expiration_days")))
-                if refresh_token
-                else clear_cookie_dt,
-                secure=get_settings("secure_cookies", True),
-                domain=domain,
-                httponly=True,
-            )
+            self._update_tokens(request, response, access_token, refresh_token)
 
         return response
