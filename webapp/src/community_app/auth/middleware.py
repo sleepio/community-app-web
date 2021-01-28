@@ -15,6 +15,9 @@ from community_app.constants import COOKIE_NAME_ACCESS_TOKEN, COOKIE_NAME_REFRES
 
 logger = logging.getLogger("CommunityMiddleware")
 
+import debugpy
+debugpy.listen(("0.0.0.0", 8211))
+
 
 class UserNotAuthenticated(BHException):
     # The page or resource you were trying to access can not be loaded until
@@ -82,7 +85,7 @@ class PlatformTokenMiddleware:
 
         if not access_token or not authentication_entity:
             tokens = authentication_service.refresh_access_token(refresh_token=refresh_token)
-            access_token, refresh_token = tokens.get(COOKIE_NAME_ACCESS_TOKEN), tokens.get(COOKIE_NAME_REFRESH_TOKEN)
+            access_token, refresh_token = tokens.get("access_token"), tokens.get("refresh_token")
             authentication_entity = authentication_service.find_with_tokens(access_token=access_token, refresh_token=refresh_token)
             if not authentication_entity:
                 raise UserNotAuthenticated
