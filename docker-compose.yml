@@ -11,7 +11,7 @@ services:
     ports:
       - "8200:8200"
       # Uncomment to help development by enabling debug ports for debugpy
-      - "8211:8211"
+      # - "8211:8211"
     entrypoint: python3
     command: /opt/bh/webapp/src/manage.py runserver 0.0.0.0:8200
     volumes:
@@ -43,8 +43,8 @@ services:
         GIT_TOKEN: ${GIT_TOKEN}
         PIP_REQUIREMENTS: requirements-test.txt
     # Uncomment to help development by enabling debug ports for debugpy
-    ports:
-      - "8212:8212"
+    # ports:
+    #   - "8212:8212"
     command: bash -c "python -m pytest --cov --cov-report html:htmlcov --cov-report term -s && flake8 . && mypy src --show-error-codes"
     volumes:
       - ./:/opt/bh
@@ -59,6 +59,7 @@ services:
       DD_ENV: "${DD_ENV:-local}"
       DD_TRACE_AGENT_URL: http://datadog:8126
       DD_TRACE_ENABLED: "${DD_TRACE_ENABLED:-False}"
+      DJANGO_SETTINGS_MODULE: "community_app.settings"
 
   postgres:
     build: docker/postgres

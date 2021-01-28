@@ -12,6 +12,7 @@ from freezegun import freeze_time
 from misago.users.models import AnonymousUser
 
 from community_app.auth.middleware import PlatformTokenMiddleware
+from community_app.constants import COOKIE_NAME_ACCESS_TOKEN, COOKIE_NAME_REFRESH_TOKEN
 
 
 @pytest.fixture
@@ -36,10 +37,10 @@ def get_response():
         return_value={"user_id": "a_user"},
     )
 )
-def test_middleware_valid_tokens(mocks, get_request, get_response):
+def test_middleware_valid_access_token(mocks, get_request, get_response):
     get_request.user = AnonymousUser()
-    get_request.COOKIES["access_token"] = "foo"
-    get_request.COOKIES["refresh_tokne"] = "bar"
+    get_request.COOKIES[COOKIE_NAME_ACCESS_TOKEN] = "foo"
+    get_request.COOKIES[COOKIE_NAME_REFRESH_TOKEN] = None
 
     middleware = PlatformTokenMiddleware(get_response)
     response = middleware(get_request)
@@ -54,7 +55,7 @@ def test_middleware_valid_tokens(mocks, get_request, get_response):
         "UserAccountAuthentication",
         "1",
         "refresh_access_token",
-        return_value={"access_token": "foo1", "refresh_token": "bar1"},
+        return_value={COOKIE_NAME_ACCESS_TOKEN: "foo1", COOKIE_NAME_REFRESH_TOKEN: "bar1"},
     ),
     ServiceCallMock(
         "UserAccountAuthentication",
@@ -65,8 +66,8 @@ def test_middleware_valid_tokens(mocks, get_request, get_response):
 )
 def test_middleware_refresh_tokens(mocks, get_request, get_response):
     get_request.user = AnonymousUser()
-    get_request.COOKIES["access_token"] = None
-    get_request.COOKIES["refresh_token"] = "bar"
+    get_request.COOKIES[COOKIE_NAME_ACCESS_TOKEN] = None
+    get_request.COOKIES[COOKIE_NAME_REFRESH_TOKEN] = "bar"
 
     middleware = PlatformTokenMiddleware(get_response)
     response = middleware(get_request)
@@ -75,7 +76,7 @@ def test_middleware_refresh_tokens(mocks, get_request, get_response):
 
     calls = [
         call(
-            "access_token",
+            COOKIE_NAME_ACCESS_TOKEN,
             "foo1",
             expires=(datetime(1970, 1, 7, 12, 0) + timedelta(seconds=get_settings("access_token_cookie_expiration_seconds"))),
             domain=".fake.com",
@@ -83,13 +84,13 @@ def test_middleware_refresh_tokens(mocks, get_request, get_response):
             httponly=True,
         ),
         call(
-            "refresh_token",
+            COOKIE_NAME_REFRESH_TOKEN,
             "bar1",
             expires=(datetime(1970, 1, 7, 12, 0) + timedelta(days=get_settings("refresh_token_cookie_expiration_days"))),
             domain=".fake.com",
             secure=get_settings("secure_cookies", True),
             httponly=True,
-        )
+        ),
     ]
     response.set_cookie.assert_has_calls(calls)
 
@@ -105,12 +106,7 @@ def raise_exception(*args, **kwargs):
 
 
 @mock_service_call(
-    ServiceCallMock(
-        "UserAccountAuthentication",
-        "1",
-        "refresh_access_token",
-        side_effect=raise_exception
-    ),
+    ServiceCallMock("UserAccountAuthentication", "1", "refresh_access_token", side_effect=raise_exception),
 )
 @mock.patch("community_app.auth.middleware.logout")
 def test_middleware_refresh_exception_logout(mocks, logout, get_request, get_response):
@@ -139,8 +135,8 @@ def test_middleware_admin_user(get_request, get_response):
             return isinstance(other, self.__class__)
 
     get_request.user = AdminUserMock()
-    get_request.COOKIES["access_token"] = "foo"
-    get_request.COOKIES["refresh_token"] = "bar"
+    get_request.COOKIES[COOKIE_NAME_ACCESS_TOKEN] = "foo"
+    get_request.COOKIES[COOKIE_NAME_REFRESH_TOKEN] = "bar"
 
     middleware = PlatformTokenMiddleware(get_response)
     response = middleware(get_request)
