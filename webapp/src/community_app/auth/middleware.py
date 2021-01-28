@@ -15,9 +15,6 @@ from community_app.constants import COOKIE_NAME_ACCESS_TOKEN, COOKIE_NAME_REFRES
 
 logger = logging.getLogger("CommunityMiddleware")
 
-import debugpy
-debugpy.listen(("0.0.0.0", 8211))
-
 
 class UserNotAuthenticated(BHException):
     # The page or resource you were trying to access can not be loaded until
