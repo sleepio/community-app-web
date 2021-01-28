@@ -59,7 +59,6 @@ services:
       DD_ENV: "${DD_ENV:-local}"
       DD_TRACE_AGENT_URL: http://datadog:8126
       DD_TRACE_ENABLED: "${DD_TRACE_ENABLED:-False}"
-      DJANGO_SETTINGS_MODULE: "community_app.settings"
 
   postgres:
     build: docker/postgres
