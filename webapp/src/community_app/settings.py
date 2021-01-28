@@ -268,7 +268,7 @@ SOCIAL_AUTH_STRATEGY = "social_django.strategy.DjangoStrategy"
 
 SOCIAL_AUTH_PIPELINE = (
     # Sleepio task to get user information
-    # Middleware task community_app.auth.middleware.platgen_session_middleware is responsible for
+    # Middleware task community_app.auth.middleware.PlatformTokenMiddleware is responsible for
     # authentication, and obtaining the platform user id
     "community_app.auth.pipeline.fetch_user_account",
 

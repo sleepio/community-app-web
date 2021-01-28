@@ -14,5 +14,4 @@ db:
   port: 5432
   username: community
 
-# sleepio_app_url: https://sleepio-2184dea4-8e34-4f87-8451-b05fb2e5dd74.ngrok.io/
-sleepio_app_url: http://localhost:8100/
+sleepio_app_url: http://app.sleepio.localhost:8100/

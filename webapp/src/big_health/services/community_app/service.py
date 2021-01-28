@@ -1,6 +1,4 @@
-# from bh.entities import SQLEntity
 from bh.services.base_service import BaseService
-# from bh.services.factory import Factory
 
 
 class CommunityApp(BaseService):
