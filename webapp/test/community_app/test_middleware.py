@@ -55,7 +55,7 @@ def test_middleware_valid_access_token(mocks, get_request, get_response):
         "UserAccountAuthentication",
         "1",
         "refresh_access_token",
-        return_value={COOKIE_NAME_ACCESS_TOKEN: "foo1", COOKIE_NAME_REFRESH_TOKEN: "bar1"},
+        return_value={"access_token": "foo1", "refresh_token": "bar1"},
     ),
     ServiceCallMock(
         "UserAccountAuthentication",
