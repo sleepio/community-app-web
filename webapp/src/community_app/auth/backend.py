@@ -15,11 +15,9 @@ class SleepioAuth(BaseAuth):
     def get_user_details(self, user_account):
         return {
             "username": user_account.get("uuid")[:12],  # TODO temporary
-            "email": user_account.get("email_address"),
-            "fullname": f"{user_account.get('first_name')} {user_account.get('last_name')}",
-            "first_name": user_account.get("first_name"),
-            "last_name": user_account.get("last_name"),
-            "uuid": user_account.get("uuid")
+            "uuid": user_account.get("uuid"),
+            # placeholder/fake address for all users
+            "email": "community_user@bighealth.com"
         }
 
     def get_user_id(self, details, response):
