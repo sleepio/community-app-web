@@ -255,6 +255,7 @@ MIDDLEWARE = [
     "misago.socialauth.middleware.socialauth_providers_middleware",
     "misago.users.middleware.UserMiddleware",
     "misago.acl.middleware.user_acl_middleware",
+    "community_app.auth.middleware.PlatformTokenMiddleware",
     "misago.core.middleware.ExceptionHandlerMiddleware",
     "misago.users.middleware.OnlineTrackerMiddleware",
     "misago.admin.middleware.AdminAuthMiddleware",
@@ -266,9 +267,9 @@ ROOT_URLCONF = "community_app.urls"
 SOCIAL_AUTH_STRATEGY = "social_django.strategy.DjangoStrategy"
 
 SOCIAL_AUTH_PIPELINE = (
-    # Sleepio token tasks to get user information
-    "community_app.auth.pipeline.extract_tokens",
-    "community_app.auth.pipeline.validate_tokens",
+    # Sleepio task to get user information
+    # Middleware task community_app.auth.middleware.PlatformTokenMiddleware is responsible for
+    # authentication, and obtaining the platform user id
     "community_app.auth.pipeline.fetch_user_account",
 
     # Steps required by social pipeline to work - don't delete those!
