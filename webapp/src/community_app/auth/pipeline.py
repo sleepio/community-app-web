@@ -4,7 +4,6 @@ from django.shortcuts import redirect
 from django.urls import reverse
 
 from bh.services.factory import Factory
-from bh_settings import get_settings
 
 from misago.socialauth.pipeline import perpare_username
 

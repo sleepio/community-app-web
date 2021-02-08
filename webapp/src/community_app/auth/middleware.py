@@ -174,7 +174,7 @@ class PlatformTokenMiddleware:
                 )
             except BHException as e:
                 logger.info(e)
-                if settings.SESSION_COOKIE_NAME in request.COOKIES:
+                if request.user.is_authenticated:
                     logout(request)
                     request.user = AnonymousUser()
 
