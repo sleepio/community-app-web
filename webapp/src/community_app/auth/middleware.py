@@ -7,6 +7,8 @@ from bh.services.factory import Factory
 from bh_settings import get_settings
 from django.conf import settings
 from django.contrib.auth import logout
+from django.shortcuts import redirect
+from django.urls import reverse
 
 # from django.shortcuts import redirect
 from misago.users.models import AnonymousUser
@@ -130,8 +132,10 @@ class PlatformTokenMiddleware:
 
     def __call__(self, request):
         """
-        Here we validate existence of an authentication entity but ONLY for non-admin users.
+        Here we validate existence of an authentication entity but ONLY for non-admin users and
+        NOT for the /admincp (admin login) url root.
         We must support admin users logging in with email, and not using Sleepio auth cookies.
+
         If we don't have an authentication entity, OR we don't have an access_token (e.g. it's expired)
         we attempt to refresh the tokens with refresh_token
 
@@ -157,7 +161,7 @@ class PlatformTokenMiddleware:
         cookies_updated = False
         authentication_entity = None
 
-        if hasattr(request, "user") and not request.user.is_superuser:
+        if "admincp" not in request.path_info and hasattr(request, "user") and not request.user.is_superuser:
             access_token, refresh_token = request.COOKIES.get(COOKIE_NAME_ACCESS_TOKEN), request.COOKIES.get(COOKIE_NAME_REFRESH_TOKEN)
 
             try:
@@ -173,14 +177,17 @@ class PlatformTokenMiddleware:
                 if settings.SESSION_COOKIE_NAME in request.COOKIES:
                     logout(request)
                     request.user = AnonymousUser()
-                # TODO enable this when we have sleepio redirect URLS,
-                #   and second level domain cookies working.
-                #   Until then, this will always fire upon landing on the page
-                #   because we won't have the cookies generated
-                # return redirect(get_settings("sleepio_app_url"))
+
+                # social:begin maps to /login/sleepio which redirects to SleepioAuth.auth_url
+                if request.path_info != reverse('social:begin', args=(["sleepio"])):
+                    return redirect(reverse('social:begin', args=(["sleepio"])))
 
         if authentication_entity:
+            # social:complete maps to /complete/sleepio which invokes the social auth pipeline
+            if request.path_info == reverse('social:complete', args=(["sleepio"])):
             request._platform_user_id = authentication_entity.get("user_id")
+            elif not request.user.is_authenticated:
+                return redirect(reverse('social:complete', args=(["sleepio"])))
 
         response = self.get_response(request)
 

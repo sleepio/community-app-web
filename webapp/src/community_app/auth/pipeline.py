@@ -1,6 +1,7 @@
 import logging
 
 from django.shortcuts import redirect
+from django.urls import reverse
 
 from bh.services.factory import Factory
 from bh_settings import get_settings
@@ -16,7 +17,7 @@ def fetch_user_account(request, *args, **kwargs) -> dict:
         return dict(user_account=user_account_entity)
     else:
         logger.debug("Middleware did not supply _platform_user_id. Redirecting to Sleepio...")
-        return redirect(get_settings("sleepio_app_url"))  # TODO Add query string to redirect back to Community
+        return redirect(reverse('social:begin', args=(["sleepio"])))
 
 
 def get_username(details, *args, **kwargs) -> dict:
