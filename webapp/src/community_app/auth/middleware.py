@@ -5,12 +5,11 @@ from typing import Optional
 from bh.core_utils.bh_exception import BHException
 from bh.services.factory import Factory
 from bh_settings import get_settings
-from django.conf import settings
+
 from django.contrib.auth import logout
 from django.shortcuts import redirect
 from django.urls import reverse
 
-# from django.shortcuts import redirect
 from misago.users.models import AnonymousUser
 
 from community_app.constants import COOKIE_NAME_ACCESS_TOKEN, COOKIE_NAME_REFRESH_TOKEN
@@ -179,15 +178,15 @@ class PlatformTokenMiddleware:
                     request.user = AnonymousUser()
 
                 # social:begin maps to /login/sleepio which redirects to SleepioAuth.auth_url
-                if request.path_info != reverse('social:begin', args=(["sleepio"])):
-                    return redirect(reverse('social:begin', args=(["sleepio"])))
+                if request.path_info != reverse("social:begin", args=(["sleepio"])):
+                    return redirect(reverse("social:begin", args=(["sleepio"])))
 
         if authentication_entity:
             # social:complete maps to /complete/sleepio which invokes the social auth pipeline
-            if request.path_info == reverse('social:complete', args=(["sleepio"])):
-            request._platform_user_id = authentication_entity.get("user_id")
+            if request.path_info == reverse("social:complete", args=(["sleepio"])):
+                request._platform_user_id = authentication_entity.get("user_id")
             elif not request.user.is_authenticated:
-                return redirect(reverse('social:complete', args=(["sleepio"])))
+                return redirect(reverse("social:complete", args=(["sleepio"])))
 
         response = self.get_response(request)
 

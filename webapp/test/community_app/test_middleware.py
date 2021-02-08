@@ -65,7 +65,7 @@ def test_middleware_valid_access_token_not_authenticated_root(mocks, get_request
     response = middleware(get_request)
 
     assert not hasattr(get_request, "_platform_user_id")
-    SimpleTestCase().assertRedirects(response, expected_url=reverse('social:complete', args=(["sleepio"])), fetch_redirect_response=False)
+    SimpleTestCase().assertRedirects(response, expected_url=reverse("social:complete", args=(["sleepio"])), fetch_redirect_response=False)
 
 
 # land on /complete/sleepio, valid tokens, not authenticated
@@ -77,7 +77,7 @@ def test_middleware_valid_access_token_not_authenticated_root(mocks, get_request
         return_value={"user_id": "a_user"},
     )
 )
-@pytest.mark.parametrize("community_path", [reverse('social:complete', args=(["sleepio"]))])
+@pytest.mark.parametrize("community_path", [reverse("social:complete", args=(["sleepio"]))])
 def test_middleware_valid_access_token_not_authenticated_complete(mocks, get_request, get_response):
     get_request.user = AnonymousUser()
     get_request.COOKIES[COOKIE_NAME_ACCESS_TOKEN] = "foo"
@@ -164,7 +164,7 @@ def test_middleware_refresh_exception_logout(mocks, logout, get_request, get_res
     assert get_request.user == AnonymousUser()
     assert not hasattr(get_request, "_platform_user_id")
     logout.assert_called_once()
-    SimpleTestCase().assertRedirects(response, expected_url=reverse('social:begin', args=(["sleepio"])), fetch_redirect_response=False)
+    SimpleTestCase().assertRedirects(response, expected_url=reverse("social:begin", args=(["sleepio"])), fetch_redirect_response=False)
 
 
 @pytest.mark.parametrize("community_path", ["/"])
