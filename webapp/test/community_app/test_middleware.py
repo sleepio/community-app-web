@@ -46,6 +46,28 @@ def get_response():
     return Mock()
 
 
+# land on /, valid tokens, authenticated
+@mock_service_call(
+    ServiceCallMock(
+        "UserAccountAuthentication",
+        "1",
+        "find_with_tokens",
+        return_value={"user_id": "a_user"},
+    )
+)
+@pytest.mark.parametrize("community_path", ["/"])
+def test_middleware_valid_access_token_authenticated_root(mocks, get_request, get_response):
+    get_request.user = UserMock()
+    get_request.COOKIES[COOKIE_NAME_ACCESS_TOKEN] = "foo"
+    get_request.COOKIES[COOKIE_NAME_REFRESH_TOKEN] = None
+
+    middleware = PlatformTokenMiddleware(get_response)
+    response = middleware(get_request)
+
+    assert not hasattr(get_request, "_platform_user_id")
+    response.set_cookie.assert_not_called()
+
+
 # land on /, valid tokens, not authenticated
 @mock_service_call(
     ServiceCallMock(
@@ -167,6 +189,7 @@ def test_middleware_refresh_exception_logout(mocks, logout, get_request, get_res
     SimpleTestCase().assertRedirects(response, expected_url=reverse("social:begin", args=(["sleepio"])), fetch_redirect_response=False)
 
 
+# admins don't have special cookie handling
 @pytest.mark.parametrize("community_path", ["/"])
 def test_middleware_admin_user(get_request, get_response):
     get_request.user = AdminUserMock()
@@ -177,5 +200,20 @@ def test_middleware_admin_user(get_request, get_response):
     response = middleware(get_request)
 
     assert get_request.user == AdminUserMock()
+    assert not hasattr(get_request, "_platform_user_id")
+    response.set_cookie.assert_not_called()
+
+
+# admin portal login doesn't have special cookie handling
+@pytest.mark.parametrize("community_path", ["/admincp/"])
+def test_middleware_admin_login(get_request, get_response):
+    get_request.user = AnonymousUser()
+    get_request.COOKIES[COOKIE_NAME_ACCESS_TOKEN] = "foo"
+    get_request.COOKIES[COOKIE_NAME_REFRESH_TOKEN] = "bar"
+
+    middleware = PlatformTokenMiddleware(get_response)
+    response = middleware(get_request)
+
+    assert get_request.user == AnonymousUser()
     assert not hasattr(get_request, "_platform_user_id")
     response.set_cookie.assert_not_called()
