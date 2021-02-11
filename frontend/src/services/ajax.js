@@ -46,6 +46,10 @@ export class Ajax {
             rejection.detail = gettext("Lost connection with application.")
           }
 
+          if (rejection.status === 401) {
+            window.location.href = rejection.getResponseHeader("redirect_url")
+          }
+
           if (rejection.status === 404) {
             if (!rejection.detail || rejection.detail === "NOT FOUND") {
               rejection.detail = gettext("Action link is invalid.")

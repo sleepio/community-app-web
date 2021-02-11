@@ -7,6 +7,7 @@ from bh.services.factory import Factory
 from bh_settings import get_settings
 
 from django.contrib.auth import logout
+from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.urls import reverse
 
@@ -177,9 +178,12 @@ class PlatformTokenMiddleware:
                     logout(request)
                     request.user = AnonymousUser()
 
-                # social:begin maps to /login/sleepio which redirects to SleepioAuth.auth_url
-                if request.path_info != reverse("social:begin", args=(["sleepio"])):
-                    return redirect(reverse("social:begin", args=(["sleepio"])))
+                if "text/html" in request.headers.get("accept"):
+                    return redirect(get_settings("sleepio_app_url"))
+                else:
+                    unauthorized = HttpResponse("Platform Authentication Failed", status=401)
+                    unauthorized["redirect_url"] = get_settings("sleepio_app_url")
+                    return unauthorized
 
         if authentication_entity:
             # social:complete maps to /complete/sleepio which invokes the social auth pipeline

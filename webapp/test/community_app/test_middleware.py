@@ -37,6 +37,7 @@ def get_request(community_path):
     request = RequestFactory().get(community_path)
     request.headers = {}
     request.headers["host"] = "foo.fake.com"
+    request.headers["accept"] = "text/html"
     request.COOKIES = {}
     return request
 
@@ -186,7 +187,7 @@ def test_middleware_refresh_exception_logout(mocks, logout, get_request, get_res
     assert get_request.user == AnonymousUser()
     assert not hasattr(get_request, "_platform_user_id")
     logout.assert_called_once()
-    SimpleTestCase().assertRedirects(response, expected_url=reverse("social:begin", args=(["sleepio"])), fetch_redirect_response=False)
+    SimpleTestCase().assertRedirects(response, expected_url=get_settings("sleepio_app_url"), fetch_redirect_response=False)
 
 
 # admins don't have special cookie handling
