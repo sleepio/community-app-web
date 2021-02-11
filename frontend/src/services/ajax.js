@@ -47,7 +47,7 @@ export class Ajax {
           }
 
           if (rejection.status === 401) {
-            window.location.href = rejection.getResponseHeader("redirect_url")
+            window.location.href = jqXHR.getResponseHeader("redirect_url")
           }
 
           if (rejection.status === 404) {
