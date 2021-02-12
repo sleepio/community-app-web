@@ -178,8 +178,19 @@ class PlatformTokenMiddleware:
                     logout(request)
                     request.user = AnonymousUser()
 
+                # Unlike social:complete, we do not use path aliases here because it results in
+                # an additional redirection, which we have to guard against.
+                # For example:
+                # social:begin resolves to /login/sleepio/ which redirects to get_settings("sleepio_app_url")
+                # Rather than guard against infinite redirects with social:begin, we redirect
+                # directly to get_settings("sleepio_app_url")
+                #
+                # If we're requesting a text/html site, and we cannot authenticate, we redirect
+                # the user to sleepio login from the middleware
                 if "text/html" in request.headers.get("accept"):
                     return redirect(get_settings("sleepio_app_url"))
+                # Otherwise, we return a 401 to the client, and handle the client-level redirect
+                # from the browser
                 else:
                     unauthorized = HttpResponse("Platform Authentication Failed", status=401)
                     unauthorized["redirect_url"] = get_settings("sleepio_app_url")
@@ -188,7 +199,14 @@ class PlatformTokenMiddleware:
         if authentication_entity:
             # social:complete maps to /complete/sleepio which invokes the social auth pipeline
             if request.path_info == reverse("social:complete", args=(["sleepio"])):
+                # If we're already authenticated, and we're authenticating, log out the authenticated user
+                if request.user.is_authenticated:
+                    logout(request)
+                    request.user = AnonymousUser()
                 request._platform_user_id = authentication_entity.get("user_id")
+            # If we're not authenticating, and the user is not authenticated
+            # redirect to authenticate the user.
+            # An example of this is hitting the root domain with valid tokens
             elif not request.user.is_authenticated:
                 return redirect(reverse("social:complete", args=(["sleepio"])))
 
