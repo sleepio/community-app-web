@@ -56,7 +56,7 @@ export class Snackbar {
       } else if (rejection.status === 401) {
         message = gettext("User is not authenticated, redirecting to Sleepio for login.")
       } else {
-        message = gettext("Unknown error has occured. 3")
+        message = gettext("Unknown error has occured.")
       }
     }
 

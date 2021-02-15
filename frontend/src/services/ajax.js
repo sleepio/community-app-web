@@ -57,7 +57,7 @@ export class Ajax {
           }
 
           if (rejection.status === 500 && !rejection.detail) {
-            rejection.detail = gettext("Unknown error has occured. 1")
+            rejection.detail = gettext("Unknown error has occured.")
           }
 
           rejection.statusText = jqXHR.statusText
@@ -237,7 +237,7 @@ export class Ajax {
           }
 
           if (rejection.status === 500 && !rejection.detail) {
-            rejection.detail = gettext("Unknown error has occured. 2")
+            rejection.detail = gettext("Unknown error has occured.")
           }
 
           rejection.statusText = jqXHR.statusText
