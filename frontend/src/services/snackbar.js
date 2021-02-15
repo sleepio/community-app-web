@@ -54,7 +54,7 @@ export class Snackbar {
       if (rejection.status === 404) {
         message = gettext("Action link is invalid.")
       } else {
-        message = gettext("Unknown error has occured.")
+        message = gettext("Unknown error has occured. 3")
       }
     }
 
