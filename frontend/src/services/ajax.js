@@ -41,14 +41,13 @@ export class Ajax {
           let rejection = jqXHR.responseJSON || {}
 
           rejection.status = jqXHR.status
-          rejection.redirect = jqXHR.getResponseHeader("redirect_url") || ""
 
           if (rejection.status === 0) {
             rejection.detail = gettext("Lost connection with application.")
           }
 
           if (rejection.status === 401) {
-            window.location.href = rejection.redirect
+            window.location.href = jqXHR.getResponseHeader("redirect_url") || ""
           }
 
           if (rejection.status === 404) {
