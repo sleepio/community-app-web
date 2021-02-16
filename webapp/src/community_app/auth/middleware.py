@@ -203,7 +203,7 @@ class PlatformTokenMiddleware:
         if authentication_entity:
             # social:complete maps to /complete/sleepio which invokes the social auth pipeline
             if request.path_info == reverse("social:complete", args=(["sleepio"])):
-                # If we're already authenticated, and we're authenticating, log out the authenticated user
+                # If there is already an active session, and we're currently attempting to authenticate, end the current session before authenticating
                 if request.user.is_authenticated:
                     logout(request)
                     request.user = AnonymousUser()
