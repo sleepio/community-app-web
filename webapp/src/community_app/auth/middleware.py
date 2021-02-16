@@ -208,7 +208,7 @@ class PlatformTokenMiddleware:
                     logout(request)
                     request.user = AnonymousUser()
                 request._platform_user_id = authentication_entity.get("user_id")
-            # If we're not authenticating, and the user is not authenticated
+            # If we're not authenticating, and there is currently no active session
             # redirect to authenticate the user.
             # An example of this is hitting the root domain with valid tokens
             elif not request.user.is_authenticated:
