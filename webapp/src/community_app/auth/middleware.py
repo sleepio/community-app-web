@@ -178,12 +178,16 @@ class PlatformTokenMiddleware:
                     logout(request)
                     request.user = AnonymousUser()
 
-                # Unlike social:complete, we do not use path aliases here because it results in
+                # We do not use the path alias of "social:begin" here because it results in
                 # an additional redirection, which we have to guard against.
                 # For example:
-                # social:begin resolves to /login/sleepio/ which redirects to get_settings("sleepio_app_url")
-                # Rather than guard against infinite redirects with social:begin, we redirect
-                # directly to get_settings("sleepio_app_url")
+                # social:begin resolves to /login/sleepio/ which resolves to the result of get_settings("sleepio_app_url")
+                # from SleepioAuth.auth_url.
+                #
+                # Rather than guard against infinite redirects with social:begin e.g.:
+                # if (...other conditions...) and request.patch_info != reverse("social:begin", args(["sleepio"]),:
+                #   return redirect(reverse("social:begin", args(["sleepio"]))
+                # we redirect directly to get_settings("sleepio_app_url")
                 #
                 # If we're requesting a text/html site, and we cannot authenticate, we redirect
                 # the user to sleepio login from the middleware
