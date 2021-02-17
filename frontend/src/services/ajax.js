@@ -48,7 +48,7 @@ export class Ajax {
 
           if (rejection.status === 401) {
             // If we receive a 401 status back, this indicates that the middleware received
-            // a non-HTML response (e.g. ajax/js) and we must redirect from the client-code.
+            // a non-HTML request (e.g. ajax/js) and we must redirect from the client-code.
             // https://stackoverflow.com/questions/199099/how-to-manage-a-redirect-request-after-a-jquery-ajax-call
             window.location.href = jqXHR.getResponseHeader("redirect_url") || ""
           }
