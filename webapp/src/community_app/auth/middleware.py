@@ -83,9 +83,15 @@ class PlatformTokenMiddleware:
             authentication_entity = authentication_service.find_with_tokens(access_token=access_token, refresh_token=refresh_token)
 
         if not access_token or not authentication_entity:
-            tokens = authentication_service.refresh_access_token(refresh_token=refresh_token)
+            tokens = {}
+            # If we don't guard our calls to authentication_service services,
+            # we bubble up missing required parameter exceptions to sentry, which is undesired
+            if refresh_token:
+                tokens = authentication_service.refresh_access_token(refresh_token=refresh_token)
             access_token, refresh_token = tokens.get("access_token"), tokens.get("refresh_token")
-            authentication_entity = authentication_service.find_with_tokens(access_token=access_token, refresh_token=refresh_token)
+            authentication_entity = None
+            if access_token or refresh_token:
+                authentication_entity = authentication_service.find_with_tokens(access_token=access_token, refresh_token=refresh_token)
             if not authentication_entity:
                 raise UserNotAuthenticated
             cookies_updated = True
