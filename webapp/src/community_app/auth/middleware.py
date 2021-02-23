@@ -207,18 +207,26 @@ class PlatformTokenMiddleware:
                     return unauthorized
 
         if authentication_entity:
+            platform_user_id = authentication_entity.get("user_id")
             # social:complete maps to /complete/sleepio which invokes the social auth pipeline
             if request.path_info == reverse("social:complete", args=(["sleepio"])):
                 # If there is already an active session, and we're currently attempting to authenticate, end the current session before authenticating
                 if request.user.is_authenticated:
                     logout(request)
                     request.user = AnonymousUser()
-                request._platform_user_id = authentication_entity.get("user_id")
+                request._platform_user_id = platform_user_id
             # If we're not authenticating, and there is currently no active session
             # redirect to authenticate the user.
             # An example of this is hitting the root domain with valid tokens
             elif not request.user.is_authenticated:
                 return redirect(reverse("social:complete", args=(["sleepio"])))
+            # We're authenticated, make sure uid matches betwen user social auth and platform auth, if not re-login via /complete
+            else:
+                # TODO we're calling UserAccount.read exclusively for its uuid, return this in authentication_entity to minimize IO
+                # We've placed this check in the final conditional block to minimize calls as possible.
+                user_account_entity = Factory.create("UserAccount", "1").read(entity_id=platform_user_id)
+                if request.user.social_auth.values()[0].get("uid") != user_account_entity.get("uuid"):
+                    return redirect(reverse("social:complete", args=(["sleepio"])))
 
         response = self.get_response(request)
 

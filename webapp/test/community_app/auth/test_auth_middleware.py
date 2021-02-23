@@ -47,13 +47,19 @@ def get_response():
     return Mock()
 
 
-# land on /, valid tokens, authenticated
+# land on /, valid tokens, authenticated, same user
 @mock_service_call(
     ServiceCallMock(
         "UserAccountAuthentication",
         "1",
         "find_with_tokens",
         return_value={"user_id": "a_user"},
+    ),
+    ServiceCallMock(
+        "UserAccount",
+        "1",
+        "read",
+        return_value={"uuid": "a_user_uuid"},
     )
 )
 @pytest.mark.parametrize("community_path", ["/"])
@@ -61,6 +67,7 @@ def test_middleware_valid_access_token_authenticated_root(mocks, get_request, ge
     get_request.user = UserMock()
     get_request.COOKIES[COOKIE_NAME_ACCESS_TOKEN] = "foo"
     get_request.COOKIES[COOKIE_NAME_REFRESH_TOKEN] = None
+    get_request.user.social_auth = Mock(values=Mock(return_value=[{"uid": "a_user_uuid"}]))
 
     middleware = PlatformTokenMiddleware(get_response)
     response = middleware(get_request)
@@ -83,6 +90,35 @@ def test_middleware_valid_access_token_not_authenticated_root(mocks, get_request
     get_request.user = AnonymousUser()
     get_request.COOKIES[COOKIE_NAME_ACCESS_TOKEN] = "foo"
     get_request.COOKIES[COOKIE_NAME_REFRESH_TOKEN] = None
+
+    middleware = PlatformTokenMiddleware(get_response)
+    response = middleware(get_request)
+
+    assert not hasattr(get_request, "_platform_user_id")
+    SimpleTestCase().assertRedirects(response, expected_url=reverse("social:complete", args=(["sleepio"])), fetch_redirect_response=False)
+
+
+# land on /, valid tokens, authenticated, different user
+@mock_service_call(
+    ServiceCallMock(
+        "UserAccountAuthentication",
+        "1",
+        "find_with_tokens",
+        return_value={"user_id": "a_user"},
+    ),
+    ServiceCallMock(
+        "UserAccount",
+        "1",
+        "read",
+        return_value={"uuid": "a_user_uuid"},
+    )
+)
+@pytest.mark.parametrize("community_path", ["/"])
+def test_middleware_valid_access_token_authenticated_root_different_user(mocks, get_request, get_response):
+    get_request.user = UserMock()
+    get_request.COOKIES[COOKIE_NAME_ACCESS_TOKEN] = "foo"
+    get_request.COOKIES[COOKIE_NAME_REFRESH_TOKEN] = None
+    get_request.user.social_auth = Mock(values=Mock(return_value=[{"uid": "b_user_uuid"}]))
 
     middleware = PlatformTokenMiddleware(get_response)
     response = middleware(get_request)
@@ -152,12 +188,19 @@ def test_middleware_valid_access_token_authenticated_complete(mocks, logout, get
         "find_with_tokens",
         return_value={"user_id": "a_user"},
     ),
+    ServiceCallMock(
+        "UserAccount",
+        "1",
+        "read",
+        return_value={"uuid": "a_user_uuid"},
+    )
 )
 @pytest.mark.parametrize("community_path", ["/"])
 def test_middleware_refresh_tokens(mocks, get_request, get_response):
     get_request.user = UserMock()
     get_request.COOKIES[COOKIE_NAME_ACCESS_TOKEN] = None
     get_request.COOKIES[COOKIE_NAME_REFRESH_TOKEN] = "bar"
+    get_request.user.social_auth = Mock(values=Mock(return_value=[{"uid": "a_user_uuid"}]))
 
     middleware = PlatformTokenMiddleware(get_response)
     response = middleware(get_request)
