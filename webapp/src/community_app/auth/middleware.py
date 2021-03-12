@@ -96,6 +96,8 @@ class PlatformTokenMiddleware:
                 raise UserNotAuthenticated
             cookies_updated = True
 
+        print(authentication_entity)
+
         return {
             COOKIE_NAME_ACCESS_TOKEN: access_token,
             COOKIE_NAME_REFRESH_TOKEN: refresh_token,
