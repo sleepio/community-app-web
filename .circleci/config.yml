@@ -56,7 +56,7 @@ jobs:
       - run:
           name: run test
           command: |
-            $LOCAL_BIN/pytest -rf webapp/src/misago/users/tests/
+            $LOCAL_BIN/pytest -rf --cov
 
       - run:
           name: generate coverage reports
